@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Infrastructure" />
+      <Folder Include="Services" />
+      <Folder Include="Stores" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LiteApp" Version="0.1.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+      <PackageReference Include="ReactiveUI.WPF" Version="18.3.1" />
+    </ItemGroup>
+
+</Project>
