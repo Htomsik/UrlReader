@@ -3,6 +3,8 @@ using Core.IOC;
 using Core.VMDs.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
 
 namespace UrlReader;
 
@@ -22,8 +24,16 @@ public class Program
     #region Methods
 
     internal static IHostBuilder CreateHostBuilder(string[] args)
-        => Host.CreateDefaultBuilder(args).ConfigureServices(ConfigureServices);
+    => Host
+        .CreateDefaultBuilder(args)
+        .ConfigureServices(ConfigureServices)
+        .UseSerilog((host, loggerConfiguration) =>
+        {
+            loggerConfiguration
+                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day);
+        });
     
+
     private static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
         => services
             .StoresRegistration()
