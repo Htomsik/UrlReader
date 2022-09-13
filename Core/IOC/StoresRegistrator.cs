@@ -1,4 +1,5 @@
 ﻿using Core.Infrastructure.Stores;
+using Core.Stores;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.IOC;
@@ -10,5 +11,6 @@ public static partial class IocRegistrator
     /// </summary>
     public static IServiceCollection StoresRegistration(this IServiceCollection services) =>
         services
-            .AddSingleton<LogsStore>();
+            .AddSingleton<LogsStore>()
+            .AddSingleton<ServiceUrlStore>();
 }
