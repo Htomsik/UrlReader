@@ -13,5 +13,5 @@ public interface IStoreParser<TParameter>
     /// </summary>
     /// <param name="parameter">Parsing parameter</param>
     /// <param name="cancelToken">Cancel operation token</param>
-    Task Parse(TParameter parameter,CancellationToken? cancelToken = null);
+    Task Parse(TParameter parameter,CancellationToken cancelToken);
 }

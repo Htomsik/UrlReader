@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Core.Models;
 
@@ -19,7 +20,7 @@ public static class UrlExtensions
     /// <param name="client">Http client</param>
     /// <returns>True if path is alive</returns>
     /// <exception cref="ArgumentNullException">If url or Url.Pat is null</exception>
-    public static async Task<bool> IsAliveAsync(this Url url,HttpClient client = null)
+    public static async Task<bool> IsAliveAsync(this Url url,CancellationToken canceltoken,HttpClient client = null)
     {
         //If Null - throwed exception
         NullChecker(url);
@@ -30,7 +31,7 @@ public static class UrlExtensions
         
         try
         {
-             response = await client.GetAsync(url.Path);
+             response = await client.GetAsync(url.Path,canceltoken);
         }
         catch
         {
@@ -50,7 +51,7 @@ public static class UrlExtensions
     /// <param name="url">Url type</param>
     /// <param name="client">Http client</param>
     /// <returns>Download Html page in string format</returns>
-    public static async Task<string?> HtmlDownloadAsync(this Url url,HttpClient client = null)
+    public static async Task<string?> HtmlDownloadAsync(this Url url,CancellationToken cancelToken,HttpClient client = null)
     {
         //If Null - throwed exception
         NullChecker(url);
@@ -58,8 +59,10 @@ public static class UrlExtensions
         client ??= new ();
         
         HttpResponseMessage response;
+
+       
         
-        response = await client.GetAsync(url.Path);
+        response = await client.GetAsync(url.Path,cancelToken);
       
         string? source = null;
 
