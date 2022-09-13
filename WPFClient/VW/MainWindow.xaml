@@ -1,8 +1,11 @@
 ﻿<Window
     Height="450"
+    MinHeight="200"
+    MinWidth="450"
     Style="{StaticResource MaterialDesignWindow}"
     Title="UrlReader"
     Width="800"
+    WindowStartupLocation="CenterScreen"
     d:DataContext="{d:DesignInstance {x:Type Vmds:MainWindowVmd},
                                      IsDesignTimeCreatable=True}"
     mc:Ignorable="d"
@@ -29,8 +32,9 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!--  Buttons  -->
+            <!--  Manage panel  -->
             <Grid Margin="5,0">
+
                 <!--  File operations  -->
                 <Button
                     Command="{Binding OpenFileCommand}"
@@ -41,6 +45,30 @@
 
                 <!--  Tags operations  -->
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+
+                    <!--  Tag selection  -->
+                    <StackPanel
+                        Margin="5,0"
+                        MinWidth="40"
+                        Orientation="Horizontal">
+
+                        <TextBlock
+                            FontSize="16"
+                            HorizontalAlignment="Center"
+                            Margin="0,0,2,0"
+                            Text="Tag:"
+                            VerticalAlignment="Bottom" />
+
+                        <ComboBox
+                            HorizontalContentAlignment="Center"
+                            ItemsSource="{Binding HtmlTagsList}"
+                            MinWidth="40"
+                            SelectedItem="{Binding SelectedHtmlTag}"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Bottom" />
+
+                    </StackPanel>
+
 
                     <Button
                         Command="{Binding StartParsingCommand}"
@@ -156,7 +184,8 @@
                 FontSize="16"
                 Grid.Row="1"
                 Margin="5"
-                Text="{Binding LastLog, StringFormat=Info: {0}}" />
+                Text="{Binding LastLog, StringFormat=Info: {0}}"
+                Visibility="{Binding LastLog, Converter={StaticResource NullableToVisibilityConverter}}" />
 
         </Grid>
 

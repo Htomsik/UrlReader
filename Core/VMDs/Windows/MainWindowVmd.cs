@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -23,12 +24,129 @@ public sealed class MainWindowVmd : ReactiveObject
     /// <summary>
     ///     Last log from loggerStore
     /// </summary>
-  
     [Reactive]
-    public string LastLog { get; private set; }
+    public string? LastLog { get; private set; }
     
     [Reactive]
     public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
+
+    [Reactive] public string SelectedHtmlTag { get; set; } 
+    
+    #region HtmlTagsList :   List with html tags for Parsing service
+
+    /// <summary>
+    ///     List with html tags for Parsing service
+    /// </summary>
+    public List<string> HtmlTagsList => new()
+    {
+        "a",
+        "abbr",
+        "address",
+        "area",
+        "article",
+        "aside",
+        "audio",
+        "b",
+        "base",
+        "bdi",
+        "bdo",
+        "blockquote",
+        "body",
+        "br",
+        "button",
+        "canvas",
+        "caption",
+        "cite",
+        "code",
+        "col",
+        "colgroup",
+        "data",
+        "datalist",
+        "dd",
+        "del",
+        "details",
+        "dfn",
+        "dialog",
+        "div",
+        "dl",
+        "dt",
+        "em",
+        "embed",
+        "fieldset",
+        "figcaption",
+        "figure",
+        "footer",
+        "form",
+        "head",
+        "header",
+        "hr",
+        "html",
+        "i",
+        "iframe",
+        "img",
+        "input",
+        "ins",
+        "kbd",
+        "label",
+        "legend",
+        "li",
+        "link",
+        "main",
+        "map",
+        "mark",
+        "meta",
+        "meter",
+        "nav",
+        "noscript",
+        "object",
+        "ol",
+        "optgroup",
+        "option",
+        "output",
+        "p",
+        "param",
+        "picture",
+        "pre",
+        "progress",
+        "q",
+        "ruby",
+        "rb",
+        "rt",
+        "rtc",
+        "rp",
+        "s",
+        "samp",
+        "script",
+        "section",
+        "select",
+        "small",
+        "source",
+        "span",
+        "strong",
+        "style",
+        "sub",
+        "summary",
+        "sup",
+        "table",
+        "tbody",
+        "td",
+        "template",
+        "textarea",
+        "tfoot",
+        "th",
+        "thead",
+        "time",
+        "title",
+        "tr",
+        "track",
+        "u",
+        "ul",
+        "var",
+        "video",
+        "wbr",
+    };
+
+    #endregion
 
     #region ServiceUrls Stats
 
@@ -57,6 +175,8 @@ public sealed class MainWindowVmd : ReactiveObject
 
         ServiceUrls = serviceUrlStore.CurrentValue;
 
+        SelectedHtmlTag = HtmlTagsList.First();
+        
         #endregion
         
         #region Subscriptions
@@ -68,7 +188,7 @@ public sealed class MainWindowVmd : ReactiveObject
         // Will set LastLog to null after 6 seconds after changing
         this.WhenAnyValue(x => x.LastLog)
             .Throttle(TimeSpan.FromSeconds(6))
-            .Subscribe(_ => LastLog = string.Empty);
+            .Subscribe(_ => LastLog = null);
 
         // Urls stats updater
         this.WhenAnyPropertyChanged()
@@ -78,6 +198,16 @@ public sealed class MainWindowVmd : ReactiveObject
                 NotAlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
                 UnknownUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
             });
+
+        // TagsCounter when change SelectedHtmlTag Updater
+        this.WhenAnyValue(x => x.SelectedHtmlTag)
+            .Subscribe(_ =>
+            {
+                foreach (var item in serviceUrlStore.CurrentValue)
+                {
+                    item.TagsCount = 0;
+                }
+            });
         
         #endregion
 
@@ -86,7 +216,7 @@ public sealed class MainWindowVmd : ReactiveObject
         StartParsingCommand = ReactiveCommand.CreateFromObservable(
             ()=>
                 Observable
-                    .StartAsync(ct=>tagParser.Parse("a",ct))
+                    .StartAsync(ct=>tagParser.Parse(SelectedHtmlTag,ct))
                     .TakeUntil(CancelParsingCommand),CanStartParsing);
 
         OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
@@ -111,10 +241,13 @@ public sealed class MainWindowVmd : ReactiveObject
     public IReactiveCommand StartParsingCommand { get;  }
 
     private IObservable<bool> CanStartParsing => 
-        this.WhenAnyValue(x => x.ServiceUrls,(urls => urls.Count != 0 ));
+        this.WhenAnyValue(
+            x => x.ServiceUrls,
+            x=>x.SelectedHtmlTag,
+            (urls,tag) 
+                => urls.Count != 0 && SelectedHtmlTag is not null );
 
     #endregion
-    
     
     /// <summary>
     ///     Open json file command

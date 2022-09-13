@@ -63,7 +63,7 @@ where TValue: ServiceUrl
 
         #endregion
 
-        #region Sibsccriptions
+        #region Subscriptions
 
         urlsCollectionStore.CurrentValueChangedNotifier += () => _urlsCollection = urlsCollectionStore.CurrentValue;
 
@@ -84,7 +84,8 @@ where TValue: ServiceUrl
         _logger.LogInformation("Starting collection parse...");
         
         var urlsArray = _urlsCollection.ToArray();
-        
+       
+      
         for (int i = 0; i < urlsArray.Length; i++)
         {
             if (cancelToken.IsCancellationRequested)
