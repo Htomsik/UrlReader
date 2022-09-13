@@ -12,5 +12,6 @@ public static partial class IocRegistrator
     public static IServiceCollection StoresRegistration(this IServiceCollection services) =>
         services
             .AddSingleton<LogsStore>()
-            .AddSingleton<ServiceUrlStore>();
+            .AddSingleton<ServiceUrlStore>()
+            .AddSingleton<HttpClientStore>();
 }

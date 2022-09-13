@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
+using Core.Services.ParserService.UrlStoreParser;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -23,7 +24,7 @@ public sealed class MainWindowVmd : ReactiveObject
     [Reactive]
     public string LastLog { get; private set; }
     
-    public ObservableCollection<ServiceUrl> ServiceUrls { get; }
+    public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
 
     #endregion
     
@@ -31,7 +32,8 @@ public sealed class MainWindowVmd : ReactiveObject
     
     public MainWindowVmd(
         IStore<ObservableCollection<string>> loggerStore,
-        IStore<ObservableCollection<ServiceUrl>> serviceUrlStore )
+        IStore<ObservableCollection<ServiceUrl>> serviceUrlStore
+        ,IStoreParser<string> tagParser)
     {
         #region Properties and Fields Initializing
 
@@ -41,6 +43,8 @@ public sealed class MainWindowVmd : ReactiveObject
         
         #region Subscriptions
 
+        serviceUrlStore.CurrentValueChangedNotifier += () => ServiceUrls = serviceUrlStore.CurrentValue;
+        
         loggerStore.CurrentValueChangedNotifier += () => LastLog = loggerStore.CurrentValue.Last();
 
         // Will set LatLog to null after 6 seconds after changing
@@ -49,12 +53,103 @@ public sealed class MainWindowVmd : ReactiveObject
             .Subscribe(_ => LastLog = string.Empty); 
 
         #endregion
-        
-        serviceUrlStore.CurrentValue.Add(new ServiceUrl
-        {
-            Path = "123"
-        });
-        
+
+        // serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>
+        // {
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://www.youtube.com/"},
+        //     new ServiceUrl{Path = "https://habr.com/ru/post/424873/"},
+        //     new ServiceUrl{Path = "https://github.com/" },
+        //     new ServiceUrl{Path = "https://github.com/" }
+        // };
+        //
+        // tagParser.Parse("a");
+
     }
 
     #endregion

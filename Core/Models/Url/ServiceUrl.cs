@@ -2,7 +2,7 @@
 
 namespace Core.Models;
 
-public sealed class ServiceUrl : Url
+public class ServiceUrl : Url
 {
 
     /// <summary>
