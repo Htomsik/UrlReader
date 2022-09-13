@@ -2,6 +2,8 @@
 using Core.Infrastructure.LogSinks;
 using Core.Infrastructure.Services;
 using Core.Infrastructure.Stores;
+using Core.Services.FileService;
+using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService;
 using Core.Services.ParserService.UrlStoreParser;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,5 +24,7 @@ public static partial class IocRegistrator
             .AddSingleton<IObserver<Exception>, GlobalExceptionHandler>()
             .AddSingleton(s => new InformationToLogStoreSink(s.GetRequiredService<LogsStore>()))
             .AddTransient<TagParser>()
-            .AddTransient<ObservableCollectionUrlStoreTagParser>();
+            .AddTransient<ServiceUrlStoreTagParser>()
+            .AddTransient<JsonClientFileService>()
+            .AddTransient<ServiceUrlStoreFileService>();
 }

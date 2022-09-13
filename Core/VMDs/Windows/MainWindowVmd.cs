@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
+using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,6 +26,7 @@ public sealed class MainWindowVmd : ReactiveObject
     [Reactive]
     public string LastLog { get; private set; }
     
+    [Reactive]
     public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
 
     #endregion
@@ -33,8 +35,9 @@ public sealed class MainWindowVmd : ReactiveObject
     
     public MainWindowVmd(
         IStore<ObservableCollection<string>> loggerStore,
-        IStore<ObservableCollection<ServiceUrl>> serviceUrlStore
-        ,IStoreParser<string> tagParser)
+        IStore<ObservableCollection<ServiceUrl>> serviceUrlStore,
+        IStoreParser<string> tagParser,
+        IStoreFileService serviceUrlsStoreFileService)
     {
         #region Properties and Fields Initializing
 
@@ -55,7 +58,9 @@ public sealed class MainWindowVmd : ReactiveObject
         #endregion
 
         #region Commands Initializing
-
+        
+        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile);
+        
         StartParsingCommand = ReactiveCommand.CreateFromObservable(
             ()=>
                 Observable
@@ -78,6 +83,11 @@ public sealed class MainWindowVmd : ReactiveObject
     ///     Start parsing store service command
     /// </summary>
     public IReactiveCommand StartParsingCommand { get;  }
+    
+    /// <summary>
+    ///     Open json file command
+    /// </summary>
+    public IReactiveCommand OpenFileCommand { get; }
     
     /// <summary>
     ///     Cancel StartParsingCommand

@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using Newtonsoft.Json;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace Core.Models;
@@ -9,5 +10,6 @@ public class Url : ReactiveObject
     ///     Path to site
     /// </summary>
     [Reactive]
+    [JsonProperty]
     public string Path { get; set; }
 }

@@ -1,18 +1,32 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace Core.Services.FileService;
 
 /// <summary>
-///     
+///     Json openFileDialog service
 /// </summary>
-public class JsonClientFileService : IFileService<string>
+public sealed class JsonClientFileService : IFileService<string>
 {
+    #region Properties and Fields
+
+    private readonly ILogger _logger;
+
+    #endregion
+    
+    public JsonClientFileService(ILogger<JsonClientFileService> logger)
+    {
+        _logger = logger;
+    }
+    
     public string GetDataFromFile()
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
+        
         openFileDialog.InitialDirectory = "c:\\";
-        openFileDialog.Filter = "json files (*.txt)|*.txt|*.json";
+        openFileDialog.Filter = "Json Files|*.json;*.txt";
         openFileDialog.FilterIndex = 2;
         openFileDialog.RestoreDirectory = true;
 

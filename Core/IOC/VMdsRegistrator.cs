@@ -1,4 +1,5 @@
 ﻿using Core.Infrastructure.Stores;
+using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
 using Core.Stores;
 using Core.VMDs.Windows;
@@ -16,5 +17,6 @@ public static partial class IocRegistrator
             .AddTransient<MainWindowVmd>(s=> 
                 new (s.GetRequiredService<LogsStore>(),
                     s.GetRequiredService<ServiceUrlStore>(),
-                    s.GetRequiredService<ObservableCollectionUrlStoreTagParser>()));
+                    s.GetRequiredService<ServiceUrlStoreTagParser>(),
+                    s.GetRequiredService<ServiceUrlStoreFileService>()));
 }
