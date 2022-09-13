@@ -1,9 +1,11 @@
 ﻿using System;
+using Core.Infrastructure.LogSinks;
 using Core.IOC;
 using Core.VMDs.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using UrlReader.VW;
 
 namespace UrlReader;
 
@@ -26,10 +28,11 @@ public class Program
     => Host
         .CreateDefaultBuilder(args)
         .ConfigureServices(ConfigureServices)
-        .UseSerilog((host, loggerConfiguration) =>
+        .UseSerilog((context, services, configuration) =>
         {
-            loggerConfiguration
-                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day);
+            configuration
+                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>());
         });
     
 

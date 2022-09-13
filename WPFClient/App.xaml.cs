@@ -3,6 +3,7 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReactiveUI;
+using UrlReader.VW;
 
 namespace UrlReader
 {
@@ -27,6 +28,7 @@ namespace UrlReader
         #endregion
 
         #region Methods
+        
         private void SetupGlobalExceptionHandler() =>  RxApp.DefaultExceptionHandler = Services.GetRequiredService<IObserver<Exception>>();
         
         #region OnStratup

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace UrlReader
+namespace UrlReader.VW
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
