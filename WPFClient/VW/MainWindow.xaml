@@ -47,7 +47,32 @@
 
         <!--  Manage Urls  -->
         <Grid Grid.Row="1">
-            <DataGrid IsReadOnly="True" ItemsSource="{Binding ServiceUrls}" />
+            <DataGrid
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                ItemsSource="{Binding ServiceUrls}">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Path=Path}" Header="Path" />
+                    <DataGridTextColumn Binding="{Binding Path=State}" Header="State" />
+                    <DataGridTextColumn Binding="{Binding Path=TagsCount}" Header="TagsCount" />
+                </DataGrid.Columns>
+
+                <DataGrid.ItemContainerStyle>
+                    <Style TargetType="DataGridRow">
+
+                        <Setter Property="Background" Value="{DynamicResource MaterialDesignDarkBackground}" />
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsParsingNow, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Background" Value="#ab7cff" />
+                            </DataTrigger>
+                        </Style.Triggers>
+
+                    </Style>
+                </DataGrid.ItemContainerStyle>
+
+            </DataGrid>
         </Grid>
 
         <!--  logger Notifier  -->
