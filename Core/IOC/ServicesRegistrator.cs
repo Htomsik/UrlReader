@@ -1,7 +1,7 @@
 ﻿using System;
 using Core.Infrastructure.LogSinks;
-using Core.Services.AppInfrastructure;
-using Core.Stores.AppInfrastructure;
+using Core.Infrastructure.Services;
+using Core.Infrastructure.Stores;
 using Microsoft.Extensions.DependencyInjection;
 
 

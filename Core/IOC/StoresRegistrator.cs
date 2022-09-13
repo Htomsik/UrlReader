@@ -1,4 +1,4 @@
-﻿using Core.Stores.AppInfrastructure;
+﻿using Core.Infrastructure.Stores;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.IOC;
