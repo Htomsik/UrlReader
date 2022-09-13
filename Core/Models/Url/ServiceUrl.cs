@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using DynamicData.Binding;
 using Newtonsoft.Json;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace Core.Models;

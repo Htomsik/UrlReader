@@ -7,7 +7,7 @@ using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
-using Microsoft.Win32;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -29,6 +29,19 @@ public sealed class MainWindowVmd : ReactiveObject
     
     [Reactive]
     public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
+
+    #region ServiceUrls Stats
+
+    [Reactive]
+    public int AlivesUrlsCount { get; private set; }
+    
+    [Reactive]
+    public int NotAlivesUrlsCount { get; private set; }
+    
+    [Reactive]
+    public int UnknownUrlsCount { get; private set; }
+
+    #endregion
 
     #endregion
     
@@ -56,6 +69,16 @@ public sealed class MainWindowVmd : ReactiveObject
         this.WhenAnyValue(x => x.LastLog)
             .Throttle(TimeSpan.FromSeconds(6))
             .Subscribe(_ => LastLog = string.Empty);
+
+        // Urls stats updater
+        this.WhenAnyPropertyChanged()
+            .Subscribe(_ =>
+            {
+                AlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Alive);
+                NotAlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
+                UnknownUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
+            });
+        
         #endregion
 
         #region Commands Initializing
@@ -64,7 +87,7 @@ public sealed class MainWindowVmd : ReactiveObject
             ()=>
                 Observable
                     .StartAsync(ct=>tagParser.Parse("a",ct))
-                    .TakeUntil(CancelParsingCommand));
+                    .TakeUntil(CancelParsingCommand),CanStartParsing);
 
         OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
         
@@ -79,11 +102,19 @@ public sealed class MainWindowVmd : ReactiveObject
     #endregion
     
     #region Commands
+    
+    #region StartParsingCommand :  Start parsing store service command
 
     /// <summary>
     ///     Start parsing store service command
     /// </summary>
     public IReactiveCommand StartParsingCommand { get;  }
+
+    private IObservable<bool> CanStartParsing => 
+        this.WhenAnyValue(x => x.ServiceUrls,(urls => urls.Count != 0 ));
+
+    #endregion
+    
     
     /// <summary>
     ///     Open json file command
