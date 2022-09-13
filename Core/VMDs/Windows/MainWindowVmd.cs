@@ -7,6 +7,7 @@ using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
+using Microsoft.Win32;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -59,20 +60,20 @@ public sealed class MainWindowVmd : ReactiveObject
 
         #region Commands Initializing
         
-        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile);
-        
         StartParsingCommand = ReactiveCommand.CreateFromObservable(
             ()=>
                 Observable
                     .StartAsync(ct=>tagParser.Parse("a",ct))
                     .TakeUntil(CancelParsingCommand));
+
+        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
         
         CancelParsingCommand = ReactiveCommand.Create(
             () => { },
             StartParsingCommand.IsExecuting);
         
         #endregion
-        
+
     }
 
     #endregion
@@ -87,7 +88,7 @@ public sealed class MainWindowVmd : ReactiveObject
     /// <summary>
     ///     Open json file command
     /// </summary>
-    public IReactiveCommand OpenFileCommand { get; }
+    public ReactiveCommand<Unit,Unit> OpenFileCommand { get; }
     
     /// <summary>
     ///     Cancel StartParsingCommand
