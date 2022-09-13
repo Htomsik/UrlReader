@@ -1,4 +1,5 @@
 ﻿using Core.Infrastructure.Stores;
+using Core.Stores;
 using Core.VMDs.Windows;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,5 +12,7 @@ public static partial class IocRegistrator
     /// </summary>
     public static IServiceCollection VmdsRegistration(this IServiceCollection services) => 
         services
-            .AddTransient<MainWindowVmd>(s=> new (s.GetRequiredService<LogsStore>()));
+            .AddTransient<MainWindowVmd>(s=> 
+                new (s.GetRequiredService<LogsStore>(),
+                    s.GetRequiredService<ServiceUrlStore>()));
 }

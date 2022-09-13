@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using AppInfrastructure.Stores.DefaultStore;
+using Core.Models;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -21,13 +22,23 @@ public sealed class MainWindowVmd : ReactiveObject
   
     [Reactive]
     public string LastLog { get; private set; }
+    
+    public ObservableCollection<ServiceUrl> ServiceUrls { get; }
 
     #endregion
     
     #region Constructors
     
-    public MainWindowVmd(IStore<ObservableCollection<string>> loggerStore)
+    public MainWindowVmd(
+        IStore<ObservableCollection<string>> loggerStore,
+        IStore<ObservableCollection<ServiceUrl>> serviceUrlStore )
     {
+        #region Properties and Fields Initializing
+
+        ServiceUrls = serviceUrlStore.CurrentValue;
+
+        #endregion
+        
         #region Subscriptions
 
         loggerStore.CurrentValueChangedNotifier += () => LastLog = loggerStore.CurrentValue.Last();
@@ -38,8 +49,11 @@ public sealed class MainWindowVmd : ReactiveObject
             .Subscribe(_ => LastLog = string.Empty); 
 
         #endregion
-
-     
+        
+        serviceUrlStore.CurrentValue.Add(new ServiceUrl
+        {
+            Path = "123"
+        });
         
     }
 

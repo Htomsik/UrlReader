@@ -1,7 +1,7 @@
 ﻿<Window
     Height="450"
     Style="{StaticResource MaterialDesignWindow}"
-    Title="MainWindow"
+    Title="UrlReader"
     Width="800"
     d:DataContext="{d:DesignInstance {x:Type Vmds:MainWindowVmd},
                                      IsDesignTimeCreatable=True}"
@@ -23,8 +23,10 @@
         <!--  Manage file  -->
         <Grid Grid.Row="0" />
 
-        <!--  Manage file  -->
-        <Grid Grid.Row="1" />
+        <!--  Manage Urls  -->
+        <Grid Grid.Row="1">
+            <DataGrid IsReadOnly="True" ItemsSource="{Binding ServiceUrls}" />
+        </Grid>
 
         <!--  logger Notifier  -->
         <Grid Grid.Row="2">
