@@ -28,11 +28,9 @@ public sealed class MainWindowVmd : ReactiveObject
     [Reactive]
     public string? LastLog { get; private set; }
     
-    [Reactive]
-    public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
+    [Reactive] public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
 
-    [Reactive]
-    public IUrlsStatisticService UrlsStatisticService { get; init; }
+    [Reactive] public IUrlsStatisticService UrlsStatisticService { get; init; }
     
     [Reactive] public string SelectedHtmlTag { get; set; } 
     
@@ -152,19 +150,9 @@ public sealed class MainWindowVmd : ReactiveObject
 
     #endregion
 
-    // #region ServiceUrls Stats
-    //
-    // [Reactive]
-    // public int AlivesUrlsCount { get; private set; }
-    //
-    // [Reactive]
-    // public int NotAlivesUrlsCount { get; private set; }
-    //
-    // [Reactive]
-    // public int UnknownUrlsCount { get; private set; }
-    //
-    // #endregion
-
+    [Reactive] public bool IsParsingNow { get; private set; }
+    
+    
     #endregion
     
     #region Constructors
@@ -190,6 +178,22 @@ public sealed class MainWindowVmd : ReactiveObject
         
         #endregion
         
+        #region Commands Initializing
+        
+        StartParsingCommand = ReactiveCommand.CreateFromObservable(
+            ()=>
+                Observable
+                    .StartAsync(ct=>tagParser.Parse(SelectedHtmlTag,ct))
+                    .TakeUntil(CancelParsingCommand),CanStartParsing);
+
+        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
+        
+        CancelParsingCommand = ReactiveCommand.Create(
+            () => { },
+            StartParsingCommand.IsExecuting);
+        
+        #endregion
+        
         #region Subscriptions
 
         serviceUrlStore.CurrentValueChangedNotifier += () => ServiceUrls = serviceUrlStore.CurrentValue;
@@ -210,22 +214,10 @@ public sealed class MainWindowVmd : ReactiveObject
                     item.TagsCount = 0;
                 }
             });
-        
-        #endregion
 
-        #region Commands Initializing
-        
-        StartParsingCommand = ReactiveCommand.CreateFromObservable(
-            ()=>
-                Observable
-                    .StartAsync(ct=>tagParser.Parse(SelectedHtmlTag,ct))
-                    .TakeUntil(CancelParsingCommand),CanStartParsing);
-
-        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
-        
-        CancelParsingCommand = ReactiveCommand.Create(
-            () => { },
-            StartParsingCommand.IsExecuting);
+        // IsParsingNow updater
+        this.WhenAnyObservable(x => x.StartParsingCommand.IsExecuting)
+            .Subscribe(x=>IsParsingNow = x);
         
         #endregion
 

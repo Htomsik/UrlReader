@@ -5,6 +5,7 @@ using Core.VMDs.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Events;
 using UrlReader.VW;
 
 namespace UrlReader;
@@ -31,8 +32,8 @@ public class Program
         .UseSerilog((context, services, configuration) =>
         {
             configuration
-                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day)
-                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>());
+                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day,restrictedToMinimumLevel: LogEventLevel.Error)
+                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>(),LogEventLevel.Information);
         });
     
 

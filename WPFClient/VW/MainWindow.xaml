@@ -60,6 +60,7 @@
 
                         <ComboBox
                             HorizontalContentAlignment="Center"
+                            IsEnabled="{Binding IsParsingNow, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource InvertBooleanConverter}}"
                             ItemsSource="{Binding HtmlTagsList}"
                             MinWidth="40"
                             SelectedItem="{Binding SelectedHtmlTag}"
