@@ -1,8 +1,11 @@
 ﻿using System;
+using Core.Infrastructure.LogSinks;
 using Core.IOC;
 using Core.VMDs.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using UrlReader.VW;
 
 namespace UrlReader;
 
@@ -22,8 +25,17 @@ public class Program
     #region Methods
 
     internal static IHostBuilder CreateHostBuilder(string[] args)
-        => Host.CreateDefaultBuilder(args).ConfigureServices(ConfigureServices);
+    => Host
+        .CreateDefaultBuilder(args)
+        .ConfigureServices(ConfigureServices)
+        .UseSerilog((context, services, configuration) =>
+        {
+            configuration
+                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>());
+        });
     
+
     private static void ConfigureServices(HostBuilderContext host, IServiceCollection services)
         => services
             .StoresRegistration()

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ReactiveUI;
+using UrlReader.VW;
 
 namespace UrlReader
 {
@@ -31,11 +28,15 @@ namespace UrlReader
         #endregion
 
         #region Methods
-
+        
+        private void SetupGlobalExceptionHandler() =>  RxApp.DefaultExceptionHandler = Services.GetRequiredService<IObserver<Exception>>();
+        
         #region OnStratup
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            SetupGlobalExceptionHandler();
+            
             base.OnStartup(e);
 
             MainWindow = Services.GetRequiredService<MainWindow>();
