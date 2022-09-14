@@ -14,7 +14,7 @@ public class ServiceUrl : Url
     /// </summary>
     [Reactive]
     [JsonIgnore]
-    public int TagsCount { get; set; } = default;
+    public int TagsCount { get; set; } = 0;
 
     /// <summary>
     ///     State of Url
@@ -22,11 +22,11 @@ public class ServiceUrl : Url
     [Reactive]
     [JsonIgnore]
     public UrlState State { get; set; } = UrlState.Unknown;
+    
+    [JsonIgnore] [Reactive] public bool IsParsingNow { get; private set; } = false;
+    [JsonIgnore] [Reactive] public bool IsMaxValue { get; set; } = false;
 
-
-    [JsonIgnore]
-    [Reactive]
-    public bool IsParsingNow { get; private set; }
+    [JsonIgnore] [Reactive] public bool IsMinValue { get; set; } = false;
 
     public ServiceUrl()
     {
@@ -37,6 +37,9 @@ public class ServiceUrl : Url
             .Subscribe(_=>IsParsingNow = true);
         
         this.WhenPropertyChanged(x=>x.State)
+            .Subscribe(_=>IsParsingNow = true);
+        
+        this.WhenPropertyChanged(x=>x.IsMaxValue)
             .Subscribe(_=>IsParsingNow = true);
 
         this.WhenPropertyChanged(x => x.IsParsingNow)

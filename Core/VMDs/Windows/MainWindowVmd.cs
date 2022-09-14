@@ -8,6 +8,7 @@ using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
+using Core.Services.StatisticService;
 using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -30,6 +31,9 @@ public sealed class MainWindowVmd : ReactiveObject
     [Reactive]
     public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
 
+    [Reactive]
+    public IUrlsStatisticService UrlsStatisticService { get; init; }
+    
     [Reactive] public string SelectedHtmlTag { get; set; } 
     
     #region HtmlTagsList :   List with html tags for Parsing service
@@ -148,18 +152,18 @@ public sealed class MainWindowVmd : ReactiveObject
 
     #endregion
 
-    #region ServiceUrls Stats
-
-    [Reactive]
-    public int AlivesUrlsCount { get; private set; }
-    
-    [Reactive]
-    public int NotAlivesUrlsCount { get; private set; }
-    
-    [Reactive]
-    public int UnknownUrlsCount { get; private set; }
-
-    #endregion
+    // #region ServiceUrls Stats
+    //
+    // [Reactive]
+    // public int AlivesUrlsCount { get; private set; }
+    //
+    // [Reactive]
+    // public int NotAlivesUrlsCount { get; private set; }
+    //
+    // [Reactive]
+    // public int UnknownUrlsCount { get; private set; }
+    //
+    // #endregion
 
     #endregion
     
@@ -169,8 +173,15 @@ public sealed class MainWindowVmd : ReactiveObject
         IStore<ObservableCollection<string>> loggerStore,
         IStore<ObservableCollection<ServiceUrl>> serviceUrlStore,
         IStoreParser<string> tagParser,
-        IStoreFileService serviceUrlsStoreFileService)
+        IStoreFileService serviceUrlsStoreFileService,
+        IUrlsStatisticService urlsStatisticService)
     {
+        #region Stores and Services Initializing
+
+        UrlsStatisticService = urlsStatisticService;
+
+        #endregion
+        
         #region Properties and Fields Initializing
 
         ServiceUrls = serviceUrlStore.CurrentValue;
@@ -189,16 +200,7 @@ public sealed class MainWindowVmd : ReactiveObject
         this.WhenAnyValue(x => x.LastLog)
             .Throttle(TimeSpan.FromSeconds(6))
             .Subscribe(_ => LastLog = null);
-
-        // Urls stats updater
-        this.WhenAnyPropertyChanged()
-            .Subscribe(_ =>
-            {
-                AlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Alive);
-                NotAlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
-                UnknownUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
-            });
-
+        
         // TagsCounter when change SelectedHtmlTag Updater
         this.WhenAnyValue(x => x.SelectedHtmlTag)
             .Subscribe(_ =>
