@@ -31,7 +31,7 @@ public static class UrlExtensions
         
         try
         {
-             response = await client.GetAsync(url.Path,canceltoken);
+             response = await client.GetAsync(url.Path,canceltoken).ConfigureAwait(false);
         }
         catch
         {
@@ -64,7 +64,7 @@ public static class UrlExtensions
         
         try
         {
-            response = await client.GetAsync(url.Path ,cancelToken);
+            response = await client.GetAsync(url.Path ,cancelToken).ConfigureAwait(false);
         }
         catch (TaskCanceledException ex)
         {

@@ -25,9 +25,7 @@ public class ServiceUrl : Url
     
     [JsonIgnore] [Reactive] public bool IsParsingNow { get; private set; } = false;
     [JsonIgnore] [Reactive] public bool IsMaxValue { get; set; } = false;
-
-    [JsonIgnore] [Reactive] public bool IsMinValue { get; set; } = false;
-
+    
     public ServiceUrl()
     {
         this.WhenPropertyChanged(x=>x.Path)

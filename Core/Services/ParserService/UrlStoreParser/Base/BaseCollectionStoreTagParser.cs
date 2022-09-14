@@ -84,29 +84,28 @@ where TValue: ServiceUrl
         _logger.LogInformation("Starting collection parse...");
         
         var urlsArray = _urlsCollection.ToArray();
-       
-      
+        
         for (int i = 0; i < urlsArray.Length; i++)
         {
-            if (cancelToken.IsCancellationRequested)
+            await Task.Run(async () =>
             {
-                _logger.LogInformation("Operation denied. Was parsing {0}/{1} urls",i,urlsArray.Length);
-                break;
-            }
-            _logger.LogInformation("Parse {0} item",i);
-           
-            if (!await urlsArray[i].IsAliveAsync(cancelToken,_httpClient).ConfigureAwait(false))
-            {
-                urlsArray[i].State = UrlState.NotAlive;
-               
-                _logger.LogInformation("item {0} is not alive",i);
-               
-                continue;
-            }
-           
-            await  IsAliveParse(urlsArray[i],parameter,cancelToken);
+                _logger.LogInformation("Parse {0} item", i);
+
+                if (!await urlsArray[i].IsAliveAsync(cancelToken, _httpClient).ConfigureAwait(false))
+                {
+                    urlsArray[i].State = UrlState.NotAlive;
+
+                    _logger.LogInformation("item {0} is not alive", i);
+
+                    return;
+                }
+
+                await IsAliveParse(urlsArray[i], parameter, cancelToken);
+                
+            }, cancelToken).ConfigureAwait(false);
+            
+            
         }
-        
         _logger.LogInformation("End collection parsing");
     }
 
