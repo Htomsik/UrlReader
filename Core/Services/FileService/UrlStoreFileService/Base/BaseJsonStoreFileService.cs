@@ -25,7 +25,9 @@ public class BaseJsonStoreFileService<TValue> : IStoreFileService
     private readonly ILogger _logger;
 
     #endregion
-    
+
+    #region Constructors
+
     public BaseJsonStoreFileService(
         IStore<TValue> store,
         IFileService<string> jsonFileService,
@@ -45,14 +47,19 @@ public class BaseJsonStoreFileService<TValue> : IStoreFileService
 
         #endregion
     }
-    
+
+
+    #endregion
+
+    #region Methods
+
     public void GetDataFromFile()
     {
         var noSerializedText = _jsonFileService.GetDataFromFile();
 
         if (string.IsNullOrEmpty(noSerializedText))
         {
-            _logger.LogInformation("File empty. Please take other file");
+            _logger.LogInformation("Operation denied or file empty. Please take other file");
             return;
         }
         
@@ -64,7 +71,7 @@ public class BaseJsonStoreFileService<TValue> : IStoreFileService
         }
         catch (Exception e)
         {
-            _logger.LogError("Invalid data format. Please take other file");
+            _logger.LogError("Invalid data format. Please take other file",e);
             return;
         }
 
@@ -77,4 +84,7 @@ public class BaseJsonStoreFileService<TValue> : IStoreFileService
         _store.CurrentValue = deserializedValue;
         
     }
+
+    #endregion
+    
 }

@@ -7,7 +7,7 @@ namespace Core.Stores;
 /// <summary>
 ///     Store for ServiceUrl
 /// </summary>
-public class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCollection<ServiceUrl>,ServiceUrl>
+public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCollection<ServiceUrl>,ServiceUrl>
 {
     
 }

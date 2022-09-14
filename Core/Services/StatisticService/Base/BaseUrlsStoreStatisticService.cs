@@ -95,8 +95,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     }
 
     #endregion
-
-
+    
     #region Methods
 
     /// <summary>

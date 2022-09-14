@@ -3,7 +3,7 @@
 /// <summary>
 ///     State of url
 /// </summary>
-public enum UrlState : byte
+public  enum UrlState : byte
 {
     Alive,
     NotAlive,

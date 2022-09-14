@@ -212,7 +212,7 @@
                             </DataTrigger>
 
                             <!--  value changing Notifier  -->
-                            <DataTrigger Binding="{Binding IsParsingNow, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <DataTrigger Binding="{Binding IsUsingNow, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                 <Setter Property="Background" Value="#ab7cff" />
                             </DataTrigger>
 

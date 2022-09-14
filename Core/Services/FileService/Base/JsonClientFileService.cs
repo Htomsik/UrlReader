@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace Core.Services.FileService;
@@ -9,17 +8,6 @@ namespace Core.Services.FileService;
 /// </summary>
 public sealed class JsonClientFileService : IFileService<string>
 {
-    #region Properties and Fields
-
-    private readonly ILogger _logger;
-
-    #endregion
-    
-    public JsonClientFileService(ILogger<JsonClientFileService> logger)
-    {
-        _logger = logger;
-    }
-    
     public string GetDataFromFile()
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();

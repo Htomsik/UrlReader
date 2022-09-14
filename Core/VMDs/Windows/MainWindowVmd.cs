@@ -25,9 +25,25 @@ public sealed class MainWindowVmd : ReactiveObject
     ///     Last log from loggerStore
     /// </summary>
     [Reactive] public string? LastLog { get; private set; }
+    
+    /// <summary>
+    ///     Collection with parsings urls 
+    /// </summary>
     [Reactive] public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
+  
+    /// <summary>
+    ///     Statistic operations server. Calculate some params about Store with ServiceUrls 
+    /// </summary>
     [Reactive] public IUrlsStatisticService UrlsStatisticService { get; init; }
+    
+    /// <summary>
+    ///     Current seleted html tag in HtmlTagsList
+    /// </summary>
     [Reactive] public string SelectedHtmlTag { get; set; }
+    
+    /// <summary>
+    ///     Retranslator from StartParsingCommand IsExecuting into bool for use into Xaml 
+    /// </summary>
     [Reactive] public bool IsParsingNow { get; private set; }
     
     #region HtmlTagsList :   List with html tags for Parsing service
