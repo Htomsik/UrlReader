@@ -35,12 +35,29 @@
             <Grid Margin="5,0">
 
                 <!--  File operations  -->
-                <Button
-                    Command="{Binding OpenFileCommand}"
-                    Content="Open File"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    materialDesign:ButtonAssist.CornerRadius="0 0 5 5" />
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+
+                    <!--  Open File  -->
+                    <Button
+                        Command="{Binding OpenFileCommand}"
+                        Content="Open File"
+                        HorizontalAlignment="Left"
+                        Margin="5,0"
+                        VerticalAlignment="Top"
+                        materialDesign:ButtonAssist.CornerRadius="0 0 5 5" />
+
+                    <!--  clear all data  -->
+                    <Button
+                        Command="{Binding ClearDataCommand}"
+                        Content="Clear File"
+                        HorizontalAlignment="Left"
+                        Margin="5,0"
+                        VerticalAlignment="Top"
+                        materialDesign:ButtonAssist.CornerRadius="0 0 5 5" />
+
+                </StackPanel>
+
+
 
                 <!--  Tags operations  -->
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">

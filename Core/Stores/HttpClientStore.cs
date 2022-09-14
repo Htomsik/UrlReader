@@ -13,7 +13,7 @@ public class HttpClientStore : BaseLazyStore<HttpClient>
 
     public HttpClientStore() => _currentValue = new Lazy<object?>(() => new HttpClient
     {
-        Timeout = TimeSpan.FromMilliseconds(500)
+        Timeout = TimeSpan.FromSeconds(1)
     });
 }
    

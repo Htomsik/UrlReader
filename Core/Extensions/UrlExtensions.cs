@@ -18,9 +18,9 @@ public static class UrlExtensions
     /// </summary>
     /// <param name="url">Url type</param>
     /// <param name="client">Http client</param>
-    /// <returns>True if path is alive</returns>
+    /// <returns>UrlState.Alive is Alive , UrlState.NotAlive is NotAlive, and  UrlState.Unknown if timeout ends</returns>
     /// <exception cref="ArgumentNullException">If url or Url.Pat is null</exception>
-    public static async Task<bool> IsAliveAsync(this Url url,CancellationToken canceltoken,HttpClient client = null)
+    public static async Task<UrlState> CheckState(this Url url,CancellationToken canceltoken,HttpClient client = null)
     {
         //If Null - throwed exception
         NullChecker(url);
@@ -35,10 +35,10 @@ public static class UrlExtensions
         }
         catch
         {
-            return false;
+            return UrlState.Unknown;
         }
         
-        return  response != null && response.IsSuccessStatusCode;
+        return  response.IsSuccessStatusCode ? UrlState.Alive : UrlState.NotAlive;
     }
     
     #endregion

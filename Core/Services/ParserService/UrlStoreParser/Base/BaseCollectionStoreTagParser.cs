@@ -87,23 +87,18 @@ where TValue: ServiceUrl
         
         for (int i = 0; i < urlsArray.Length; i++)
         {
-            await Task.Run(async () =>
+            if (cancelToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Parse {0} item", i);
-
-                if (!await urlsArray[i].IsAliveAsync(cancelToken, _httpClient).ConfigureAwait(false))
-                {
-                    urlsArray[i].State = UrlState.NotAlive;
-
-                    _logger.LogInformation("item {0} is not alive", i);
-
-                    return;
-                }
-
-                await IsAliveParse(urlsArray[i], parameter, cancelToken);
-                
-            }, cancelToken).ConfigureAwait(false);
+                _logger.LogInformation("Operation denied.{0}/{1} urls was processed",i,urlsArray.Length);
+                return;
+            }
             
+            _logger.LogInformation("Parse {0}/{1} item", i,urlsArray.Length);
+            
+            urlsArray[i].State = await urlsArray[i].CheckState(cancelToken, _httpClient);
+
+            if (urlsArray[i].State is UrlState.Alive)
+                await IsAliveParse(urlsArray[i], parameter, cancelToken);
             
         }
         _logger.LogInformation("End collection parsing");
@@ -121,9 +116,6 @@ where TValue: ServiceUrl
     /// <param name="cancelToken">Cancelation operation token</param>
     private async Task IsAliveParse(TValue value,string parameter,CancellationToken cancelToken)
     {
-        
-        value.State = UrlState.Alive;
-        
         _logger.LogInformation("Download html page");
         
         var stringHtml = await value.HtmlDownloadAsync(cancelToken,_httpClient);
@@ -135,7 +127,7 @@ where TValue: ServiceUrl
             return;
         }
         
-        var htmlDocument =  _htmlParser.ParseDocument(stringHtml);
+        var htmlDocument =  await _htmlParser.ParseDocumentAsync(stringHtml, cancelToken);
 
         var tags = _tagParser.Parse(htmlDocument, parameter);
 
