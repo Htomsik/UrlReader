@@ -100,6 +100,14 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
             
                     TagsMaxValue = UrlsCount != 0 ?  ServiceUrls.Max(x=>x.TagsCount) : 0;
                     TagsWithMaxValue = ServiceUrls.Count(x=>x.IsMaxValue);
+
+                    foreach (var item in ServiceUrls)
+                    {
+                        item.IsMaxValue =  
+                            TagsMaxValue != 0 
+                            && item.TagsCount != 0  
+                            && TagsMaxValue == item.TagsCount;
+                    }
                     
                 });
 
