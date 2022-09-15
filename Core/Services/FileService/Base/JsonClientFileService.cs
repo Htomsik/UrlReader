@@ -29,7 +29,7 @@ public sealed class JsonClientFileService : IFileService<string>
             }
         }
 
-        return fileContent;
+        return fileContent.Trim();
     }
    
 }
