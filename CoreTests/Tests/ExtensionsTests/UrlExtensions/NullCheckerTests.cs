@@ -1,7 +1,7 @@
 ﻿using Core.Extensions;
 using CoreTests.Resources;
 
-namespace CoreTests.ExtensionsTests.UrlExtensions;
+namespace CoreTests.Tests.ExtensionsTests.UrlExtensions;
 
 [TestClass]
 public class NullCheckerTests
@@ -15,8 +15,8 @@ public class NullCheckerTests
     public void UrlNullCheckerThrowExceptions()
     {
         //Act+Arrange+Assert
-        Assert.ThrowsException<ArgumentNullException>(() => GlobalConstans.NullUrl.NullChecker());
-        Assert.ThrowsException<ArgumentNullException>(() => GlobalConstans.NullPathUrl.NullChecker());
+        Assert.ThrowsException<ArgumentNullException>(() => GlobalConstants.NullUrl.NullChecker());
+        Assert.ThrowsException<ArgumentNullException>(() => GlobalConstants.NullPathUrl.NullChecker());
     }
 
     #endregion

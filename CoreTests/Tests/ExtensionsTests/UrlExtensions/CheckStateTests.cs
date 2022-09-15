@@ -3,7 +3,7 @@ using Core.Extensions;
 using Core.Models;
 using CoreTests.Resources;
 
-namespace CoreTests.ExtensionsTests.UrlExtensions;
+namespace CoreTests.Tests.ExtensionsTests.UrlExtensions;
 
 [TestClass]
 public class CheckStateTests
@@ -21,7 +21,7 @@ public class CheckStateTests
 
         //Act+Assert
         Assert.AreEqual(UrlState.Alive,
-            GlobalConstans.RightUrl.CheckState(new CancellationToken(), httpClient).Result);
+            GlobalConstants.RightUrl.CheckState(new CancellationToken(), httpClient).Result);
     }
 
 
@@ -36,7 +36,7 @@ public class CheckStateTests
 
         //Act+Assert
         Assert.AreEqual(UrlState.NotAlive,
-            GlobalConstans.RightUrl.CheckState(new CancellationToken(), httpClient).Result);
+            GlobalConstants.RightUrl.CheckState(new CancellationToken(), httpClient).Result);
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class CheckStateTests
 
         //Act+Assert
         Assert.AreEqual(UrlState.Unknown,
-            GlobalConstans.ErrorUrl.CheckState(new CancellationToken(), httpClient).Result);
+            GlobalConstants.ErrorUrl.CheckState(new CancellationToken(), httpClient).Result);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class CheckStateTests
 
         //Act+Assert
         Assert.AreEqual(UrlState.Unknown,
-            GlobalConstans.RightUrl.CheckState(new CancellationToken(), httpClient).Result);
+            GlobalConstants.RightUrl.CheckState(new CancellationToken(), httpClient).Result);
     }
 
 
@@ -79,9 +79,9 @@ public class CheckStateTests
 
         //Act+Assert
         Assert.ThrowsException<AggregateException>(() =>
-            GlobalConstans.NullPathUrl.CheckState(new CancellationToken(), httpClient).Result);
+            GlobalConstants.NullPathUrl.CheckState(new CancellationToken(), httpClient).Result);
         Assert.ThrowsException<AggregateException>(() =>
-            GlobalConstans.NullUrl.CheckState(new CancellationToken(), httpClient).Result);
+            GlobalConstants.NullUrl.CheckState(new CancellationToken(), httpClient).Result);
     }
 
     #endregion

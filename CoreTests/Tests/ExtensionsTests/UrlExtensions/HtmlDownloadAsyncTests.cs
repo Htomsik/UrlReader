@@ -2,7 +2,7 @@
 using Core.Extensions;
 using CoreTests.Resources;
 
-namespace CoreTests.ExtensionsTests.UrlExtensions;
+namespace CoreTests.Tests.ExtensionsTests.UrlExtensions;
 
 [TestClass]
 public class HtmlDownloadAsyncTests
@@ -19,7 +19,7 @@ public class HtmlDownloadAsyncTests
         var httpClient = HttpMocks.CreateHttpClient(HttpStatusCode.OK,downloadedString);
         
         //Act+Assert
-        Assert.AreEqual(downloadedString,GlobalConstans.RightUrl.HtmlDownloadAsync(new CancellationToken(),httpClient).Result);
+        Assert.AreEqual(downloadedString,GlobalConstants.RightUrl.HtmlDownloadAsync(new CancellationToken(),httpClient).Result);
     }
     
     
@@ -35,7 +35,7 @@ public class HtmlDownloadAsyncTests
         var httpClient = HttpMocks.CreateHttpClient(HttpStatusCode.OK,downloadedString);
         
         //Act+Assert
-        Assert.IsNull(GlobalConstans.ErrorUrl.HtmlDownloadAsync(new CancellationToken(),httpClient).Result);
+        Assert.IsNull(GlobalConstants.ErrorUrl.HtmlDownloadAsync(new CancellationToken(),httpClient).Result);
     }
     
      
@@ -51,7 +51,7 @@ public class HtmlDownloadAsyncTests
         var httpClient = HttpMocks.CreateHttpClient(HttpStatusCode.OK,downloadedString,true);
         
         //Act+Assert
-        Assert.IsNull(GlobalConstans.RightUrl.HtmlDownloadAsync(new CancellationToken(),httpClient).Result);
+        Assert.IsNull(GlobalConstants.RightUrl.HtmlDownloadAsync(new CancellationToken(),httpClient).Result);
     }
     
     
@@ -66,9 +66,9 @@ public class HtmlDownloadAsyncTests
 
         //Act+Assert
         Assert.ThrowsException<AggregateException>(() =>
-            GlobalConstans.NullPathUrl.HtmlDownloadAsync(new CancellationToken(), httpClient).Result);
+            GlobalConstants.NullPathUrl.HtmlDownloadAsync(new CancellationToken(), httpClient).Result);
         Assert.ThrowsException<AggregateException>(() =>
-            GlobalConstans.NullUrl.HtmlDownloadAsync(new CancellationToken(), httpClient).Result);
+            GlobalConstants.NullUrl.HtmlDownloadAsync(new CancellationToken(), httpClient).Result);
     }
     
     

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Core.Services.FileService.UrlStoreFileService;
 
 /// <summary>
-///     IstoreFileService for ServiceUrlStore
+///     IStoreFileService realization for ServiceUrlStore
 /// </summary>
 public sealed class ServiceUrlStoreFileService : BaseJsonStoreFileService<ObservableCollection<ServiceUrl>>
 {

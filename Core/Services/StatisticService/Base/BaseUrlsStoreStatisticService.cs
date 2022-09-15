@@ -47,13 +47,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     [Reactive]
     public int TagsWithMaxValue { get; private set;}
     
-    [Reactive]
-    public int TagsMinValue { get; private set; }
     
-    [Reactive]
-    public int TagsWithMinValue { get; private set; }
-
-
     #endregion
 
 

@@ -16,7 +16,7 @@ namespace Core.Services.ParserService.UrlStoreParser;
 /// </summary>
 /// <typeparam name="TCollection">Some collection woth ServiceUrls</typeparam>
 /// <typeparam name="TValue">ServiceUrl</typeparam>
-public abstract  class BaseCollectionStoreTagParser<TCollection,TValue> : IStoreParser<string>
+public  class BaseCollectionStoreTagParser<TCollection,TValue> : IStoreParser<string>
 where TCollection : ICollection<TValue>
 where TValue: ServiceUrl
 {

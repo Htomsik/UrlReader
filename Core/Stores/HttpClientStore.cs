@@ -7,7 +7,7 @@ namespace Core.Stores;
 /// <summary>
 ///     Store for HttpClient
 /// </summary>
-public sealed class HttpClientStore : BaseLazyStore<HttpClient>
+public class HttpClientStore : BaseLazyStore<HttpClient>
 {
     public override HttpClient CurrentValue => (HttpClient)_currentValue.Value;
 
