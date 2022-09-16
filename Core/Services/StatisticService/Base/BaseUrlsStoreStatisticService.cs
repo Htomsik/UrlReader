@@ -113,7 +113,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
         UrlsUnknownCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
 
         TagsCount = ServiceUrls.Sum(x => x.TagsCount);
-        TagsAverageCount = (int)(ServiceUrls.Count != 0 ? ServiceUrls.Average(x => x.TagsCount) : 0);
+        TagsAverageCount = (int)(ServiceUrls.Count(x=>x.State == UrlState.Alive) != 0 ? ServiceUrls.Where(x=>x.State == UrlState.Alive).Average(x => x.TagsCount) : 0);
         TagsMaxValue = ServiceUrls.Count != 0 ? ServiceUrls.Max(x => x.TagsCount) : 0;
         TagsWithMaxValue = ServiceUrls.Count(x => x.IsMaxValue);
 
