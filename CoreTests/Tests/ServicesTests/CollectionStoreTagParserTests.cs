@@ -36,7 +36,7 @@ public class CollectionStoreTagParserTests
         
         var storeTagParser = new BaseCollectionStoreTagParser<ObservableCollection<ServiceUrl>, ServiceUrl>(serviceUrls,httpClientStore.Object,tagParser,mockLogger.Object);
         //Arrange
-        storeTagParser.Parse("p", new CancellationToken());
+        storeTagParser.Parse("p", new CancellationToken()).Wait();
         
         //Assert
         Assert.AreEqual(4,serviceUrls.CurrentValue.First().TagsCount);

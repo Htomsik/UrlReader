@@ -117,3 +117,4 @@ C:\Users\JessJake\RiderProjects\UrlReader\CoreTests\bin\Debug\net6.0-windows\Sys
 C:\Users\JessJake\RiderProjects\UrlReader\CoreTests\bin\Debug\net6.0-windows\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.Messages.dll
 C:\Users\JessJake\RiderProjects\UrlReader\CoreTests\bin\Debug\net6.0-windows\Core.dll
 C:\Users\JessJake\RiderProjects\UrlReader\CoreTests\bin\Debug\net6.0-windows\Core.pdb
+C:\Users\JessJake\RiderProjects\UrlReader\CoreTests\bin\Debug\net6.0-windows\fastJSON.dll

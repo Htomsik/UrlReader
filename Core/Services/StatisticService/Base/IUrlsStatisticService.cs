@@ -1,9 +1,11 @@
-﻿namespace Core.Services.StatisticService;
+﻿using AppInfrastructure.Services.NavigationServices.Close;
+
+namespace Core.Services.StatisticService;
 
 /// <summary>
 ///     Statistic for urls collections
 /// </summary>
-public interface IUrlsStatisticService
+public interface IUrlsStatisticService : ICloseServices
 {
     #region Collection
 
@@ -55,6 +57,4 @@ public interface IUrlsStatisticService
     
     #endregion
     
-    
-  
 }

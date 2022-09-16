@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using DynamicData;
@@ -56,10 +57,9 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     
     [Reactive]
     private ObservableCollection<ServiceUrl> ServiceUrls { get; set; }
-
-    private IDisposable _serviceUrlsUpdater;
-
+    
     private int _oldMaxValue = 0;
+    
     #endregion
 
     #region Constructors
@@ -72,25 +72,24 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
 
         #endregion
 
-        #region Subscription
+        #region Subscriptions
 
         urlsStore.CurrentValueChangedNotifier += () =>
         {
-
             if (ServiceUrls.Count != urlsStore.CurrentValue.Count )
-                Clear();
+                Close();
             
             ServiceUrls = urlsStore.CurrentValue;
+        
+            //Spesial for update statistic
+            this.RaisePropertyChanged(nameof(ServiceUrls));
             
-            _serviceUrlsUpdater?.Dispose();
-            
-            _serviceUrlsUpdater = ServiceUrls
-                .ToObservableChangeSet()
-                .AutoRefresh(TimeSpan.FromSeconds(5))
-                .Subscribe(_ =>Update());
-            
-           
         };
+        
+        //Update statistic. 200 ms is timer for wait non used momet of urlsStore into oter flow
+        this.WhenPropertyChanged(x=>x.ServiceUrls)
+            .Throttle(TimeSpan.FromMilliseconds(200))
+            .Subscribe(_ => Update());
         
         #endregion
         
@@ -105,7 +104,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     /// <summary>
     ///     Update values
     /// </summary>
-    private void Update()
+    public void Update()
     {
         UrlsCount = ServiceUrls.Count;
 
@@ -155,7 +154,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     /// </summary>
     private int ServiceStateCount(UrlState urlState) => ServiceCount(x=>x.State == urlState);
 
-    private void Clear()
+    public void Close()
     {
         UrlsCount = 0;
         UrlsAliveCount = 0;
@@ -172,6 +171,8 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     
     #endregion
 
+
+ 
 }
 
 

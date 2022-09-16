@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Extensions;
 using Core.Infrastructure.LogSinks;
 using Core.IOC;
 using Core.VMDs.Windows;

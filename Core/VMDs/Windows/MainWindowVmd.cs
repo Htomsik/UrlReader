@@ -9,6 +9,8 @@ using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
 using Core.Services.StatisticService;
+using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -200,11 +202,8 @@ public sealed class MainWindowVmd : ReactiveObject
                 .StartAsync(ct=> serviceUrlsStoreFileService.GetDataFromFile(ct)).TakeUntil(CancelParsingCommand), StartParsingCommand.IsExecuting.Select(x=> x == false));
 
         ClearDataCommand = ReactiveCommand.Create(()=>serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>(),CanClearData);
-
-        var test = this.WhenAnyObservable(x => x.StartParsingCommand.IsExecuting, x => x.OpenFileCommand.IsExecuting,
-            ((b, b1) => b1 || b));
         
-        CancelParsingCommand = ReactiveCommand.Create(() => { },test);
+        CancelParsingCommand = ReactiveCommand.Create(() => { },CanCancel);
             
         
         
@@ -220,7 +219,7 @@ public sealed class MainWindowVmd : ReactiveObject
                 LastLog = loggerStore.CurrentValue.Last();
            
         };
-
+        
         // Will set LastLog to null after 6 seconds after changing
         this.WhenAnyValue(x => x.LastLog)
             .Throttle(TimeSpan.FromSeconds(6))
@@ -233,7 +232,10 @@ public sealed class MainWindowVmd : ReactiveObject
                 foreach (var item in serviceUrlStore.CurrentValue)
                 {
                     item.TagsCount = 0;
+                    item.State = UrlState.Unknown;
+                    item.IsMaxValue = false;
                 }
+                urlsStatisticService.Close();
             });
 
         // IsParsingNow updater
@@ -252,13 +254,20 @@ public sealed class MainWindowVmd : ReactiveObject
     ///     Open json file command
     /// </summary>
     public IReactiveCommand OpenFileCommand { get; }
-    
+
+    #region CancelParsingCommand :  Cancel StartParsingCommand
+
     /// <summary>
-    ///     Cancel StartParsingCommand
+    ///     Cancel StartParsingCommand or OpenFileCommand
     /// </summary>
     public ReactiveCommand<Unit,Unit> CancelParsingCommand { get;  }
+    
+    private IObservable<bool> CanCancel => this.WhenAnyObservable(x => x.StartParsingCommand.IsExecuting, x => x.OpenFileCommand.IsExecuting,
+        ((b, b1) => b1 || b));
 
 
+    #endregion
+    
     #region ClearDataCommand :  Clear data from Urls Store
 
     /// <summary>
@@ -291,9 +300,7 @@ public sealed class MainWindowVmd : ReactiveObject
                 => urls.Count != 0 && SelectedHtmlTag is not null );
 
     #endregion
-
-
-
+    
     #endregion
     
 }
