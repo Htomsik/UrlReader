@@ -218,6 +218,10 @@
                                 <Setter Property="Background" Value="#ab7cff" />
                             </DataTrigger>
 
+                            <!--  Unknow changing Notifier  -->
+                            <DataTrigger Binding="{Binding State, UpdateSourceTrigger=PropertyChanged}" Value="Unknown">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </DataTrigger>
 
                         </Style.Triggers>
 
