@@ -83,6 +83,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
             
             ServiceUrlsUpdater = ServiceUrls
                 .ToObservableChangeSet()
+                .AutoRefresh()
                 .Subscribe(_ =>Update());
             
             Update();
