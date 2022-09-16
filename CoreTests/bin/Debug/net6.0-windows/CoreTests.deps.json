@@ -55,7 +55,7 @@
         }
       },
       "Fody/6.6.3": {},
-      "LiteApp/0.1.0": {
+      "LiteApp/0.1.1": {
         "runtime": {
           "lib/net6.0/AppInfrastructure.dll": {
             "assemblyVersion": "1.0.0.0",
@@ -1195,7 +1195,7 @@
       "Core/1.0.0": {
         "dependencies": {
           "AngleSharp": "0.17.1",
-          "LiteApp": "0.1.0",
+          "LiteApp": "0.1.1",
           "Microsoft.Extensions.DependencyInjection": "6.0.0",
           "Microsoft.Extensions.Logging": "6.0.0",
           "Newtonsoft.Json": "13.0.1",
@@ -1250,12 +1250,12 @@
       "path": "fody/6.6.3",
       "hashPath": "fody.6.6.3.nupkg.sha512"
     },
-    "LiteApp/0.1.0": {
+    "LiteApp/0.1.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Xsw8T2/ylID4vVnwfV6q/0HM8WJocnJ0RmxjY6w2pNmR7VZasn1IkHkfRF6pjdnfvGOskl+fNj9krbnkr8rTcA==",
-      "path": "liteapp/0.1.0",
-      "hashPath": "liteapp.0.1.0.nupkg.sha512"
+      "sha512": "sha512-wGJH2ONIUGYP48noR1hdGn2LsabBiA2YdproXTHhm8J+EepE89g64gZi+wikgTGqEXKejiauO32ge2lwp35/bw==",
+      "path": "liteapp/0.1.1",
+      "hashPath": "liteapp.0.1.1.nupkg.sha512"
     },
     "Microsoft.CodeCoverage/17.1.0": {
       "type": "package",

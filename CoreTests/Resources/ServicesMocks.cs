@@ -9,7 +9,7 @@ public static class ServicesMocks
     {
         var mockFileService = new Mock<IFileService<TValue>>();
         
-        mockFileService.Setup(x => x.GetDataFromFile()).Returns(output);
+        mockFileService.Setup(x => x.GetDataFromFile()).ReturnsAsync(output);
 
         return mockFileService.Object;
     }

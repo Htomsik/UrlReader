@@ -51,7 +51,7 @@
           "build/_._": {}
         }
       },
-      "LiteApp/0.1.0": {
+      "LiteApp/0.1.1": {
         "type": "package",
         "compile": {
           "lib/net6.0/AppInfrastructure.dll": {}
@@ -1845,7 +1845,7 @@
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
           "AngleSharp": "0.17.1",
-          "LiteApp": "0.1.0",
+          "LiteApp": "0.1.1",
           "Microsoft.Extensions.DependencyInjection": "6.0.0",
           "Microsoft.Extensions.Logging": "6.0.0",
           "Newtonsoft.Json": "13.0.1",
@@ -2014,16 +2014,16 @@
         "netstandardtask/Mono.Cecil.pdb"
       ]
     },
-    "LiteApp/0.1.0": {
-      "sha512": "Xsw8T2/ylID4vVnwfV6q/0HM8WJocnJ0RmxjY6w2pNmR7VZasn1IkHkfRF6pjdnfvGOskl+fNj9krbnkr8rTcA==",
+    "LiteApp/0.1.1": {
+      "sha512": "wGJH2ONIUGYP48noR1hdGn2LsabBiA2YdproXTHhm8J+EepE89g64gZi+wikgTGqEXKejiauO32ge2lwp35/bw==",
       "type": "package",
-      "path": "liteapp/0.1.0",
+      "path": "liteapp/0.1.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Resources/Nuget.png",
         "lib/net6.0/AppInfrastructure.dll",
-        "liteapp.0.1.0.nupkg.sha512",
+        "liteapp.0.1.1.nupkg.sha512",
         "liteapp.nuspec"
       ]
     },

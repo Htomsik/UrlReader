@@ -29,7 +29,7 @@ public sealed class InformationToLogStoreSink : ILogEventSink
     
     public void Emit(LogEvent logEvent)
     {
-          if (logEvent.Level == LogEventLevel.Information)
+        //  if (logEvent.Level == LogEventLevel.Information)
             _infoLogStore.AddIntoEnumerable(logEvent.RenderMessage());
     }
     

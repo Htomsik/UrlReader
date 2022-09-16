@@ -8,12 +8,12 @@ namespace Core.Services.FileService.UrlStoreFileService;
 /// <summary>
 ///     IStoreFileService realization for ServiceUrlStore
 /// </summary>
-public sealed class ServiceUrlStoreFileService : BaseJsonStoreFileService<ObservableCollection<ServiceUrl>>
+public sealed class ServiceUrlCollectionStoreFileService : BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>
 {
-    public ServiceUrlStoreFileService(
+    public ServiceUrlCollectionStoreFileService(
         ServiceUrlStore store,
         JsonClientFileService jsonFileService, 
-        ILogger<BaseJsonStoreFileService<ObservableCollection<ServiceUrl>>> logger) : base(store, jsonFileService, logger)
+        ILogger<BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>> logger) : base(store, jsonFileService, logger)
     {
     }
 }

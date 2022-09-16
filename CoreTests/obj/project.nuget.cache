@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "KbirO/78qQuRgoxKQEqDzYkiSscrhSwiHS67wUtE+0a1Ax+CuNL2L95rFkIlgB/+dMeImBpA3lAxFLwGejpd6w==",
+  "dgSpecHash": "sadP4i54gt/iKiM3FD9vUgQ1wdjRiWpSwZeizGNCjNaPiKftGVCvcd/+gdM+fWtiKdj5e8hiva1QpuQbbzWAoQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj",
   "expectedPackageFiles": [
@@ -9,7 +9,7 @@
     "C:\\Users\\JessJake\\.nuget\\packages\\coverlet.collector\\3.1.2\\coverlet.collector.3.1.2.nupkg.sha512",
     "C:\\Users\\JessJake\\.nuget\\packages\\dynamicdata\\7.9.5\\dynamicdata.7.9.5.nupkg.sha512",
     "C:\\Users\\JessJake\\.nuget\\packages\\fody\\6.6.3\\fody.6.6.3.nupkg.sha512",
-    "C:\\Users\\JessJake\\.nuget\\packages\\liteapp\\0.1.0\\liteapp.0.1.0.nupkg.sha512",
+    "C:\\Users\\JessJake\\.nuget\\packages\\liteapp\\0.1.1\\liteapp.0.1.1.nupkg.sha512",
     "C:\\Users\\JessJake\\.nuget\\packages\\microsoft.codecoverage\\17.1.0\\microsoft.codecoverage.17.1.0.nupkg.sha512",
     "C:\\Users\\JessJake\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.0\\microsoft.extensions.dependencyinjection.6.0.0.nupkg.sha512",
     "C:\\Users\\JessJake\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",

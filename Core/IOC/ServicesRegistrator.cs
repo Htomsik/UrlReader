@@ -27,6 +27,6 @@ public static partial class IocRegistrator
             .AddTransient<TagParser>()
             .AddTransient<ServiceUrlStoreTagParser>()
             .AddTransient<JsonClientFileService>()
-            .AddTransient<ServiceUrlStoreFileService>()
+            .AddTransient<ServiceUrlCollectionStoreFileService>()
             .AddTransient<ServiceUrlStoreStatisticService>();
 }

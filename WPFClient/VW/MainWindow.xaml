@@ -57,8 +57,6 @@
 
                 </StackPanel>
 
-
-
                 <!--  Tags operations  -->
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
 
@@ -186,6 +184,8 @@
             <!--  Urls list  -->
             <DataGrid
                 AutoGenerateColumns="False"
+                EnableColumnVirtualization="True"
+                EnableRowVirtualization="True"
                 Grid.Column="1"
                 IsReadOnly="True"
                 ItemsSource="{Binding ServiceUrls}"

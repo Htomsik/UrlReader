@@ -1,4 +1,5 @@
-﻿using AppInfrastructure.Stores.DefaultStore;
+﻿using System.Collections.ObjectModel;
+using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
 using CoreTests.Resources;
@@ -17,17 +18,19 @@ public class JsonStoreFileServiceTests
     public void IsJsonConvertedWhenAllRight()
     {
         //Act
-        var serviceStore = new BaseLazyStore<ServiceUrl>();
+        var serviceStore = new BaseLazyStore<ObservableCollection<ServiceUrl>>();
+
+        serviceStore.CurrentValue = new ObservableCollection<ServiceUrl>();
         
-        var mockLogger = new Mock<ILogger<BaseJsonStoreFileService<ServiceUrl>>>();
+        var mockLogger = new Mock<ILogger<BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>>>();
         
-        var storeJsonConverter = new BaseJsonStoreFileService<ServiceUrl>(serviceStore,ServicesMocks.CreateFileService(GlobalConstants.RightUrlJson()),mockLogger.Object);
+        var storeJsonConverter = new BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>(serviceStore,ServicesMocks.CreateFileService(GlobalConstants.RightUrlJson()),mockLogger.Object);
         
         //Assert
-        storeJsonConverter.GetDataFromFile();
+        storeJsonConverter.GetDataFromFile().Wait();
         
         //Arrange
-        Assert.AreEqual(GlobalConstants.RightUrl.Path,serviceStore.CurrentValue.Path);
+        Assert.AreEqual(GlobalConstants.RightUrl.Path,serviceStore.CurrentValue.First().Path);
     }
     
     /// <summary>
@@ -37,14 +40,14 @@ public class JsonStoreFileServiceTests
     public void IsJsonNotConvertedWhenDataInOtherType()
     {
         //Act
-        var serviceStore = new BaseLazyStore<ServiceUrl>();
+        var serviceStore = new BaseLazyStore<ObservableCollection<ServiceUrl>>();
         
-        var mockLogger = new Mock<ILogger<BaseJsonStoreFileService<ServiceUrl>>>();
+        var mockLogger = new Mock<ILogger<BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>>>();
         
-        var storeJsonConverter = new BaseJsonStoreFileService<ServiceUrl>(serviceStore,ServicesMocks.CreateFileService("NotAUrl"),mockLogger.Object);
+        var storeJsonConverter = new BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>(serviceStore,ServicesMocks.CreateFileService("NotAUrl"),mockLogger.Object);
         
         //Assert
-        storeJsonConverter.GetDataFromFile();
+        storeJsonConverter.GetDataFromFile().Wait();
         
         //Arrange
         Assert.IsNull(serviceStore.CurrentValue);

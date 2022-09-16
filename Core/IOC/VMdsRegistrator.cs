@@ -19,6 +19,6 @@ public static partial class IocRegistrator
                 new (s.GetRequiredService<LogsStore>(),
                     s.GetRequiredService<ServiceUrlStore>(),
                     s.GetRequiredService<ServiceUrlStoreTagParser>(),
-                    s.GetRequiredService<ServiceUrlStoreFileService>(),
+                    s.GetRequiredService<ServiceUrlCollectionStoreFileService>(),
                     s.GetRequiredService<ServiceUrlStoreStatisticService>()));
 }

@@ -195,7 +195,8 @@ public sealed class MainWindowVmd : ReactiveObject
                     .StartAsync(ct=>tagParser.Parse(SelectedHtmlTag,ct))
                     .TakeUntil(CancelParsingCommand),CanStartParsing);
 
-        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
+        OpenFileCommand = ReactiveCommand.CreateFromObservable(()=>
+            Observable.StartAsync(async ct=> await serviceUrlsStoreFileService.GetDataFromFile().ConfigureAwait(false)), StartParsingCommand.IsExecuting.Select(x=> x == false));
 
         ClearDataCommand = ReactiveCommand.Create(()=>serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>(),CanClearData);
         
