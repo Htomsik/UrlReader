@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using AppInfrastructure.Stores.DefaultStore;
@@ -101,6 +100,8 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     
     #region Methods
 
+    #region Update : Update statistic
+
     /// <summary>
     ///     Update values
     /// </summary>
@@ -108,24 +109,25 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     {
         UrlsCount = ServiceUrls.Count;
 
-        UrlsAliveCount = ServiceUrls.Count(x => x.State == UrlState.Alive);
-        UrlsNotAliveCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
-        UrlsUnknownCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
+        UrlsAliveCount = ServiceStateCount(UrlState.Alive);
+        UrlsNotAliveCount = ServiceStateCount(UrlState.NotAlive);
+        UrlsUnknownCount = ServiceStateCount(UrlState.Unknown);
 
         TagsCount = ServiceUrls.Sum(x => x.TagsCount);
-        TagsAverageCount = (int)(ServiceUrls.Count(x=>x.State == UrlState.Alive) != 0 ? ServiceUrls.Where(x=>x.State == UrlState.Alive).Average(x => x.TagsCount) : 0);
-        TagsMaxValue = ServiceUrls.Count != 0 ? ServiceUrls.Max(x => x.TagsCount) : 0;
-        TagsWithMaxValue = ServiceUrls.Count(x => x.IsMaxValue);
-
         
-        if (_oldMaxValue == TagsMaxValue)
+        TagsAverageCount = (int)(ServiceStateCount(UrlState.Alive) != 0 ? ServiceUrls.Where(x=>x.State == UrlState.Alive).Average(x => x.TagsCount) : 0);
+        
+        TagsMaxValue = ServiceUrls.Count != 0 ? ServiceUrls.Max(x => x.TagsCount) : 0;
+        
+        TagsWithMaxValue = ServiceCount(x=>x.TagsCount == TagsMaxValue);
+        
+        if (_oldMaxValue == TagsMaxValue && TagsWithMaxValue == ServiceUrls.Count(x=>x.IsMaxValue))
             return;
         
         _oldMaxValue = TagsMaxValue;
 
         if (TagsMaxValue == 0)
             return;
-        
         
         foreach (var serviceUrl in ServiceUrls.Where(x => x.IsMaxValue))
         {
@@ -139,6 +141,20 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
 
     }
 
+    #endregion
+    
+    #region Addons 
+
+    /// <summary>
+    ///     For code readability
+    /// </summary>
+    private int ServiceCount(Func<ServiceUrl, bool> func) => ServiceUrls.Count(func);
+    
+    /// <summary>
+    ///     For code readability
+    /// </summary>
+    private int ServiceStateCount(UrlState urlState) => ServiceCount(x=>x.State == urlState);
+
     private void Clear()
     {
         UrlsCount = 0;
@@ -151,6 +167,8 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
         TagsMaxValue = 0;
         TagsWithMaxValue = 0;
     }
+    
+    #endregion
     
     #endregion
 
