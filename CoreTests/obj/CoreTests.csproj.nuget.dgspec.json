@@ -148,6 +148,10 @@
             "Serilog": {
               "target": "Package",
               "version": "[2.11.0, )"
+            },
+            "fastJSON": {
+              "target": "Package",
+              "version": "[2.4.0.4, )"
             }
           },
           "imports": [

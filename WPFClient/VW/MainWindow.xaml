@@ -189,6 +189,8 @@
                 Grid.Column="1"
                 IsReadOnly="True"
                 ItemsSource="{Binding ServiceUrls}"
+                VirtualizingStackPanel.CacheLengthUnit="Item"
+                VirtualizingStackPanel.VirtualizationMode="Recycling"
                 x:Name="ServiceUrlsDataGrid">
 
                 <!--  Column Style  -->

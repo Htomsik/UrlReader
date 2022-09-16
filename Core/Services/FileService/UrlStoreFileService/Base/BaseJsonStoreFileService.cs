@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using AppInfrastructure.Stores.DefaultStore;
 using Microsoft.Extensions.Logging;
@@ -27,6 +29,9 @@ where TCollection : ICollection<TValue>, new()
 
     private readonly ILogger _logger;
 
+    /// <summary>
+    ///     
+    /// </summary>
     private int _separatingCollectionCount = 0;
 
     #endregion
@@ -52,8 +57,7 @@ where TCollection : ICollection<TValue>, new()
 
         #endregion
     }
-
-
+    
     #endregion
 
     #region Methods
@@ -63,7 +67,7 @@ where TCollection : ICollection<TValue>, new()
         
         if (string.IsNullOrEmpty(noSerializedText))
         {
-            _logger.LogInformation("Operation denied or file empty. Please take other file");
+            _logger.LogError("Operation denied or file empty. Please take other file");
             return;
         }
 
@@ -71,24 +75,29 @@ where TCollection : ICollection<TValue>, new()
         
         int convertedCount = 0;
         
+        var loggerTimer = Stopwatch.StartNew();
+        
         await foreach (var item in TextSeparator(noSerializedText))
         {
             try
             {
                 await Task.Run(() =>
                 {
-                    convertedCount++;
                     
-                   _logger.LogInformation("Converting {0}/{1} value...",convertedCount,_separatingCollectionCount);
-                    
-                    var deserializeObject = JsonConvert.DeserializeObject<TValue>(item);
-
-                    if (deserializeObject is null)
+                    if (deserCollection.Count == convertedCount + 50)
                     {
-                        throw new ArgumentNullException(nameof(deserializeObject));
+                        _logger.LogInformation("Converting {0}/{1} value...",deserCollection.Count,_separatingCollectionCount);
+                        convertedCount += 50;
                     }
                     
-                    deserCollection.Add(deserializeObject);
+                    var deserializedObject = fastJSON.JSON.ToObject<TValue>(item);
+                  
+                    if (deserializedObject is null)
+                    {
+                        throw new ArgumentNullException(nameof(deserializedObject));
+                    }
+                    
+                    deserCollection.Add(deserializedObject);
                 });
             }
             catch (Exception e)
@@ -102,6 +111,9 @@ where TCollection : ICollection<TValue>, new()
             _logger.LogInformation("Failed deserialize data. Please take other file");
             return;
         }
+        
+        _logger.LogWarning("All data converted.Elapsed time: {0}s", loggerTimer.Elapsed.TotalSeconds);
+        loggerTimer.Stop();
         
         _store.CurrentValue = deserCollection;
         

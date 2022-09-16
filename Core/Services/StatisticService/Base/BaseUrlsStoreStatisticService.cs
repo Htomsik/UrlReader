@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using AppInfrastructure.Stores.DefaultStore;
@@ -58,6 +57,9 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     [Reactive]
     private ObservableCollection<ServiceUrl> ServiceUrls { get; set; }
 
+    private IDisposable ServiceUrlsUpdater;
+   
+
     #endregion
 
     #region Constructors
@@ -77,17 +79,19 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
             
             ServiceUrls = urlsStore.CurrentValue;
             
-            //Update Info
-            ServiceUrls
+            ServiceUrlsUpdater?.Dispose();
+            
+            ServiceUrlsUpdater = ServiceUrls
                 .ToObservableChangeSet()
-                .AutoRefresh()
                 .Subscribe(_ =>Update());
             
+            Update();
         };
+        
+    
         
         #endregion
         
-        Update();
     }
 
     #endregion
@@ -99,20 +103,18 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     /// </summary>
     private void Update()
     {
-        var serviceUrls = ServiceUrls.ToList();
-
-        UrlsCount = serviceUrls.Count;
+        UrlsCount = ServiceUrls.Count;
             
-        UrlsAliveCount = serviceUrls.Count(x => x.State == UrlState.Alive);
-        UrlsNotAliveCount = serviceUrls.Count(x => x.State == UrlState.NotAlive);
-        UrlsUnknownCount = serviceUrls.Count(x => x.State == UrlState.Unknown);
+        UrlsAliveCount = ServiceUrls.Count(x => x.State == UrlState.Alive);
+        UrlsNotAliveCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
+        UrlsUnknownCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
 
-        TagsCount = serviceUrls.Sum(x=>x.TagsCount);
-        TagsAverageCount = (int)(serviceUrls.Count != 0 ? serviceUrls.Average(x => x.TagsCount) : 0);
-        TagsMaxValue = serviceUrls.Count != 0 ?  serviceUrls.Max(x=>x.TagsCount) : 0;
-        TagsWithMaxValue = serviceUrls.Count(x=>x.IsMaxValue);
+        TagsCount = ServiceUrls.Sum(x=>x.TagsCount);
+        TagsAverageCount = (int)(ServiceUrls.Count != 0 ? ServiceUrls.Average(x => x.TagsCount) : 0);
+        TagsMaxValue = ServiceUrls.Count != 0 ?  ServiceUrls.Max(x=>x.TagsCount) : 0;
+        TagsWithMaxValue = ServiceUrls.Count(x=>x.IsMaxValue);
 
-        foreach (var item in serviceUrls)
+        foreach (var item in ServiceUrls)
         {
             item.IsMaxValue =  
                 TagsMaxValue != 0 

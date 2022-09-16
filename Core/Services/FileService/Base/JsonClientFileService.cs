@@ -50,7 +50,6 @@ public sealed class JsonClientFileService : IFileService<string>
                 fileContent += line;
             }
             
-            _logger.LogInformation("All symbols processing");
         }
         
         return fileContent.Trim();

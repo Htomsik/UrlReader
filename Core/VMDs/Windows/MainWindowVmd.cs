@@ -196,7 +196,7 @@ public sealed class MainWindowVmd : ReactiveObject
                     .TakeUntil(CancelParsingCommand),CanStartParsing);
 
         OpenFileCommand = ReactiveCommand.CreateFromObservable(()=>
-            Observable.StartAsync(async ct=> await serviceUrlsStoreFileService.GetDataFromFile().ConfigureAwait(false)), StartParsingCommand.IsExecuting.Select(x=> x == false));
+            Observable.StartAsync(ct=> serviceUrlsStoreFileService.GetDataFromFile()), StartParsingCommand.IsExecuting.Select(x=> x == false));
 
         ClearDataCommand = ReactiveCommand.Create(()=>serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>(),CanClearData);
         
@@ -210,7 +210,12 @@ public sealed class MainWindowVmd : ReactiveObject
 
         serviceUrlStore.CurrentValueChangedNotifier += () => ServiceUrls = serviceUrlStore.CurrentValue;
         
-        loggerStore.CurrentValueChangedNotifier += () => LastLog = loggerStore.CurrentValue.Last();
+        loggerStore.CurrentValueChangedNotifier += () => 
+        {
+            if (loggerStore.CurrentValue.Count != 0)
+                LastLog = loggerStore.CurrentValue.Last();
+           
+        };
 
         // Will set LastLog to null after 6 seconds after changing
         this.WhenAnyValue(x => x.LastLog)
