@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using AppInfrastructure.Stores.DefaultStore;
@@ -57,9 +58,9 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     [Reactive]
     private ObservableCollection<ServiceUrl> ServiceUrls { get; set; }
 
-    private IDisposable ServiceUrlsUpdater;
-   
+    private IDisposable _serviceUrlsUpdater;
 
+    private int _oldMaxValue = 0;
     #endregion
 
     #region Constructors
@@ -76,20 +77,21 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
 
         urlsStore.CurrentValueChangedNotifier += () =>
         {
+
+            if (ServiceUrls.Count != urlsStore.CurrentValue.Count )
+                Clear();
             
             ServiceUrls = urlsStore.CurrentValue;
             
-            ServiceUrlsUpdater?.Dispose();
+            _serviceUrlsUpdater?.Dispose();
             
-            ServiceUrlsUpdater = ServiceUrls
+            _serviceUrlsUpdater = ServiceUrls
                 .ToObservableChangeSet()
-                .AutoRefresh()
+                .AutoRefresh(TimeSpan.FromSeconds(5))
                 .Subscribe(_ =>Update());
             
-            Update();
+           
         };
-        
-    
         
         #endregion
         
@@ -105,24 +107,53 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
     private void Update()
     {
         UrlsCount = ServiceUrls.Count;
-            
+
         UrlsAliveCount = ServiceUrls.Count(x => x.State == UrlState.Alive);
         UrlsNotAliveCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
         UrlsUnknownCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
 
-        TagsCount = ServiceUrls.Sum(x=>x.TagsCount);
+        TagsCount = ServiceUrls.Sum(x => x.TagsCount);
         TagsAverageCount = (int)(ServiceUrls.Count != 0 ? ServiceUrls.Average(x => x.TagsCount) : 0);
-        TagsMaxValue = ServiceUrls.Count != 0 ?  ServiceUrls.Max(x=>x.TagsCount) : 0;
-        TagsWithMaxValue = ServiceUrls.Count(x=>x.IsMaxValue);
+        TagsMaxValue = ServiceUrls.Count != 0 ? ServiceUrls.Max(x => x.TagsCount) : 0;
+        TagsWithMaxValue = ServiceUrls.Count(x => x.IsMaxValue);
 
-        foreach (var item in ServiceUrls)
+        
+        if (_oldMaxValue == TagsMaxValue)
+            return;
+        
+        _oldMaxValue = TagsMaxValue;
+
+        if (TagsMaxValue == 0)
+            return;
+        
+        
+        foreach (var serviceUrl in ServiceUrls.Where(x => x.IsMaxValue))
         {
-            item.IsMaxValue =  
-                TagsMaxValue != 0 
-                && item.TagsCount != 0  
-                && TagsMaxValue == item.TagsCount;
+            serviceUrl.IsMaxValue = false;
         }
+
+        foreach (var serviceUrl in ServiceUrls.Where(x => x.TagsCount == TagsMaxValue))
+        {
+            serviceUrl.IsMaxValue = true;
+        }
+
     }
 
+    private void Clear()
+    {
+        UrlsCount = 0;
+        UrlsAliveCount = 0;
+        UrlsNotAliveCount = 0;
+        UrlsUnknownCount = 0;
+
+        TagsCount = 0;
+        TagsAverageCount = 0;
+        TagsMaxValue = 0;
+        TagsWithMaxValue = 0;
+    }
+    
     #endregion
+
 }
+
+

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Core.Services.FileService.UrlStoreFileService;
 
@@ -7,5 +8,10 @@ namespace Core.Services.FileService.UrlStoreFileService;
 /// </summary>
 public interface IStoreFileService
 {
-    Task GetDataFromFile();
+    /// <summary>
+    ///     Getting and processing some data from file
+    /// </summary>
+    /// <param name="cancellationToken">Cancel operation token</param>
+    /// <returns></returns>
+    Task GetDataFromFile(CancellationToken cancellationToken);
 }

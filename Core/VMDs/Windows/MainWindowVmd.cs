@@ -196,13 +196,17 @@ public sealed class MainWindowVmd : ReactiveObject
                     .TakeUntil(CancelParsingCommand),CanStartParsing);
 
         OpenFileCommand = ReactiveCommand.CreateFromObservable(()=>
-            Observable.StartAsync(ct=> serviceUrlsStoreFileService.GetDataFromFile()), StartParsingCommand.IsExecuting.Select(x=> x == false));
+            Observable
+                .StartAsync(ct=> serviceUrlsStoreFileService.GetDataFromFile(ct)).TakeUntil(CancelParsingCommand), StartParsingCommand.IsExecuting.Select(x=> x == false));
 
         ClearDataCommand = ReactiveCommand.Create(()=>serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>(),CanClearData);
+
+        var test = this.WhenAnyObservable(x => x.StartParsingCommand.IsExecuting, x => x.OpenFileCommand.IsExecuting,
+            ((b, b1) => b1 || b));
         
-        CancelParsingCommand = ReactiveCommand.Create(
-            () => { },
-            StartParsingCommand.IsExecuting);
+        CancelParsingCommand = ReactiveCommand.Create(() => { },test);
+            
+        
         
         #endregion
         

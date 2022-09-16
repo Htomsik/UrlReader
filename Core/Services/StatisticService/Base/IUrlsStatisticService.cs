@@ -29,8 +29,7 @@ public interface IUrlsStatisticService
     public int UrlsUnknownCount { get; }
 
     #endregion
-
-
+    
     #region Tags
     
     /// <summary>
@@ -55,5 +54,7 @@ public interface IUrlsStatisticService
     public int TagsWithMaxValue { get; }
     
     #endregion
+    
+    
   
 }

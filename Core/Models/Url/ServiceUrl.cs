@@ -51,7 +51,7 @@ public class ServiceUrl : Url
         
         this.WhenPropertyChanged(x=>x.IsMaxValue)
             .Subscribe(_=>IsUsingNow = true);
-
+        
         this.WhenPropertyChanged(x => x.IsUsingNow)
             .Throttle(TimeSpan.FromSeconds(1))
             .Subscribe(_=>IsUsingNow = false);

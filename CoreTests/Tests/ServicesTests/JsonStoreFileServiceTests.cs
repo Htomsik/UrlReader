@@ -27,7 +27,7 @@ public class JsonStoreFileServiceTests
         var storeJsonConverter = new BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>(serviceStore,ServicesMocks.CreateFileService(GlobalConstants.RightUrlJson()),mockLogger.Object);
         
         //Assert
-        storeJsonConverter.GetDataFromFile().Wait();
+        storeJsonConverter.GetDataFromFile(new CancellationToken()).Wait();
         
         //Arrange
         Assert.AreEqual(GlobalConstants.RightUrl.Path,serviceStore.CurrentValue.First().Path);
@@ -47,7 +47,7 @@ public class JsonStoreFileServiceTests
         var storeJsonConverter = new BaseJsonCollectionStoreFileService<ObservableCollection<ServiceUrl>,ServiceUrl>(serviceStore,ServicesMocks.CreateFileService("NotAUrl"),mockLogger.Object);
         
         //Assert
-        storeJsonConverter.GetDataFromFile().Wait();
+        storeJsonConverter.GetDataFromFile(new CancellationToken()).Wait();
         
         //Arrange
         Assert.IsNull(serviceStore.CurrentValue);

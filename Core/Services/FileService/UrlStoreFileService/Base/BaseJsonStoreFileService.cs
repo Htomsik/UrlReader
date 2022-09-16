@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using AppInfrastructure.Stores.DefaultStore;
 using Microsoft.Extensions.Logging;
@@ -28,11 +29,26 @@ where TCollection : ICollection<TValue>, new()
     #region Properties and Fields
 
     private readonly ILogger _logger;
+    
+    #endregion
+    
+    #region TemporaryData
 
     /// <summary>
-    ///     
+    ///     Count of separating string lines
     /// </summary>
     private int _separatingCollectionCount = 0;
+    
+    /// <summary>
+    ///     Count of converted values
+    /// </summary>
+    private  int _convertedCount = 0;
+    
+    /// <summary>
+    ///     Count of deserialized values
+    /// </summary>
+    private TCollection? _deserializedValues = new ();
+
 
     #endregion
 
@@ -61,7 +77,10 @@ where TCollection : ICollection<TValue>, new()
     #endregion
 
     #region Methods
-    public async Task GetDataFromFile()
+
+    #region GetDataFromFile : Getting and processing some data from file
+
+    public async Task GetDataFromFile(CancellationToken cancellationToken)
     {
         var noSerializedText = await _jsonFileService.GetDataFromFile();
         
@@ -70,55 +89,48 @@ where TCollection : ICollection<TValue>, new()
             _logger.LogError("Operation denied or file empty. Please take other file");
             return;
         }
-
-        TCollection? deserCollection = new TCollection();
-        
-        int convertedCount = 0;
         
         var loggerTimer = Stopwatch.StartNew();
         
-        await foreach (var item in TextSeparator(noSerializedText))
+        await foreach (var item in TextSeparator(noSerializedText).WithCancellation(cancellationToken))
         {
             try
             {
-                await Task.Run(() =>
+                if (cancellationToken.IsCancellationRequested)
                 {
-                    
-                    if (deserCollection.Count == convertedCount + 50)
-                    {
-                        _logger.LogInformation("Converting {0}/{1} value...",deserCollection.Count,_separatingCollectionCount);
-                        convertedCount += 50;
-                    }
-                    
-                    var deserializedObject = fastJSON.JSON.ToObject<TValue>(item);
-                  
-                    if (deserializedObject is null)
-                    {
-                        throw new ArgumentNullException(nameof(deserializedObject));
-                    }
-                    
-                    deserCollection.Add(deserializedObject);
-                });
+                    _logger.LogWarning("Operation denied. War operating {0},{1}",_convertedCount,_separatingCollectionCount);
+                    break;
+                }
+
+                await JsonDeserialize(item,cancellationToken);
+
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Invalid data format. value : {0}/{1}",convertedCount);
+                _logger.LogError(e,"Invalid data format. value : {0}/{1}",_convertedCount,_separatingCollectionCount);
             }
         }
         
-        if (deserCollection.Count == 0 || deserCollection.Equals(new TCollection()))
+        if (_deserializedValues?.Count == 0 || (bool)_deserializedValues?.Equals(new TCollection()))
         {
             _logger.LogInformation("Failed deserialize data. Please take other file");
             return;
         }
         
         _logger.LogWarning("All data converted.Elapsed time: {0}s", loggerTimer.Elapsed.TotalSeconds);
+        
         loggerTimer.Stop();
         
-        _store.CurrentValue = deserCollection;
-        
+        _store.CurrentValue = _deserializedValues;
+
+        DisposingTemporaryValues();
+
     }
-    
+
+    #endregion
+
+    #region TextSeparator :  Separating Json Array text on blocks
+
     /// <summary>
     ///     Separating Json Array text on blocks
     /// </summary>
@@ -137,6 +149,52 @@ where TCollection : ICollection<TValue>, new()
             yield return  item;
         }
     }
+
+
+    #endregion
+
+    #region JsonDeserialize : Deserialize string to json
+
+    private async Task JsonDeserialize(string item,CancellationToken cancellationToken)
+    {
+        await Task.Run(() =>
+        {
+            if (_deserializedValues?.Count == _convertedCount + 50)
+            {
+                _logger.LogInformation("Converting {0}/{1} value...",_deserializedValues.Count,_separatingCollectionCount);
+                _convertedCount += 50;
+            }
+        
+            var deserializedObject = fastJSON.JSON.ToObject<TValue>(item);
+                  
+            if (deserializedObject is null)
+            {
+                throw new ArgumentNullException(nameof(deserializedObject));
+            }
+                    
+            _deserializedValues?.Add(deserializedObject);
+            
+        },cancellationToken);
+
+    }
+
+    #endregion
+
+    #region DisposingTemporaryValues : Set to default or null temporary data
+
+    /// <summary>
+    ///     Set to null temporary data
+    /// </summary>
+    private void DisposingTemporaryValues()
+    {
+        _convertedCount = 0;
+
+        _separatingCollectionCount = 0;
+        
+        _deserializedValues = new ();
+    }
+
+    #endregion
 
     #endregion
     

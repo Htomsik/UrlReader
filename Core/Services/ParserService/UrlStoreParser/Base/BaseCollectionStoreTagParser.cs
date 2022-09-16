@@ -98,7 +98,7 @@ where TValue: ServiceUrl
             urlsArray[i].State = await urlsArray[i].CheckState(cancelToken, _httpClient);
 
             if (urlsArray[i].State is UrlState.Alive)
-                await IsAliveParse(urlsArray[i], parameter, cancelToken);
+                await IsAliveParse(urlsArray[i], parameter, cancelToken).ConfigureAwait(false);
             
         }
         _logger.LogInformation("End collection parsing");
@@ -136,7 +136,6 @@ where TValue: ServiceUrl
 
 
     #endregion
-  
     
     #endregion
     
