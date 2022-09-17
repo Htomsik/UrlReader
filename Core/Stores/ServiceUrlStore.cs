@@ -17,13 +17,14 @@ public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCol
         get => (ObservableCollection<ServiceUrl>?)_currentValue.Value;
         set
         {
-            _currentValue = new Lazy<object>((Func<object>) (() => (object) value));
+            _currentValue = new Lazy<object?>((() => new ObservableCollection<ServiceUrl>(value)));
 
             if (value == null)
             {
                 OnCurrentValueDeleted();
-                _changed?.Dispose();
             }
+            
+            _changed?.Dispose();
             
             if (value != null)
             {
@@ -39,5 +40,5 @@ public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCol
     }
 
     public ServiceUrlStore() => CurrentValue = new ObservableCollection<ServiceUrl>();
-
+    
 }

@@ -35,6 +35,9 @@ public class CollectionStoreStatisticServiceTest
         
         Stats.Update();
         
+       
+        Thread.Sleep(500); //Wait update
+        
         //Assert
         Assert.AreEqual(Stats.TagsCount,serviceUrls.CurrentValue.Sum(x=>x.TagsCount));
         
