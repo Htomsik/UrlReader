@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
@@ -9,39 +12,56 @@ namespace Core.Services.FileService;
 /// </summary>
 public sealed class JsonClientFileService : IFileService<string>
 {
+
     #region Properties and Fields
 
     private readonly ILogger _logger;
 
     #endregion
     
-    public JsonClientFileService(ILogger<JsonClientFileService> logger)
+    #region Constructors
+
+    public JsonClientFileService(ILogger<JsonClientFileService> logger )
     {
         _logger = logger;
     }
+
+    #endregion
     
-    public string GetDataFromFile()
+    public async Task<string> GetDataFromFile()
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
-        
+
         openFileDialog.InitialDirectory = "c:\\";
         openFileDialog.Filter = "Json Files|*.json;*.txt";
         openFileDialog.FilterIndex = 2;
         openFileDialog.RestoreDirectory = true;
 
         string fileContent = string.Empty;
-        
+
         if (openFileDialog.ShowDialog() == true)
         {
             var fileStream = openFileDialog.OpenFile();
-
-            using (StreamReader reader = new StreamReader(fileStream))
+            
+            _logger.LogInformation("File have {0} symbols",fileStream.Length);
+            
+            await foreach (var line in  GetDataLines(fileStream).ConfigureAwait(false))
             {
-                fileContent = reader.ReadToEnd();
+                fileContent += line;
             }
+            
         }
-
-        return fileContent;
+        
+        return fileContent.Trim();
     }
-   
+    
+    private async IAsyncEnumerable<string> GetDataLines(Stream stream)
+    {
+        byte[] buffer = new byte[stream.Length];
+
+        await stream.ReadAsync(buffer, 0, buffer.Length);
+             
+        yield return  Encoding.Default.GetString(buffer);
+        
+    }
 }

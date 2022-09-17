@@ -11,6 +11,9 @@ public class HttpClientStore : BaseLazyStore<HttpClient>
 {
     public override HttpClient CurrentValue => (HttpClient)_currentValue.Value;
 
-    public HttpClientStore() => _currentValue = new Lazy<object?>(() => new HttpClient());
+    public HttpClientStore() => _currentValue = new Lazy<object?>(() => new HttpClient
+    {
+        Timeout = TimeSpan.FromSeconds(2)
+    });
 }
    

@@ -1,20 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using AppInfrastructure.Stores.DefaultStore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+
 
 namespace Core.Services.FileService.UrlStoreFileService;
 
 /// <summary>
 ///     Json realizing for IStoreFileService
 /// </summary>
-/// <typeparam name="TValue"></typeparam>
-public class BaseJsonStoreFileService<TValue> : IStoreFileService
+/// <typeparam name="TCollection"></typeparam>
+public class BaseJsonCollectionStoreFileService<TCollection,TValue> : IStoreFileService
+where TCollection : ICollection<TValue>, new()
 {
 
     #region Stores and Services
 
-    private readonly IStore<TValue> _store;
+    private readonly IStore<TCollection> _store;
 
     private readonly IFileService<string> _jsonFileService;
 
@@ -23,13 +28,35 @@ public class BaseJsonStoreFileService<TValue> : IStoreFileService
     #region Properties and Fields
 
     private readonly ILogger _logger;
-
+    
     #endregion
     
-    public BaseJsonStoreFileService(
-        IStore<TValue> store,
+    #region TemporaryData
+
+    /// <summary>
+    ///     Count of separating string lines
+    /// </summary>
+    private int _separatingCollectionCount = 0;
+    
+    /// <summary>
+    ///     Count of converted values
+    /// </summary>
+    private  int _convertedCount = 0;
+    
+    /// <summary>
+    ///     Count of deserialized values
+    /// </summary>
+    private TCollection? _deserializedValues = new ();
+
+
+    #endregion
+
+    #region Constructors
+
+    public BaseJsonCollectionStoreFileService(
+        IStore<TCollection> store,
         IFileService<string> jsonFileService,
-        ILogger<BaseJsonStoreFileService<TValue>> logger)
+        ILogger logger)
     {
         #region Stores and Services Initializing
 
@@ -46,35 +73,128 @@ public class BaseJsonStoreFileService<TValue> : IStoreFileService
         #endregion
     }
     
-    public void GetDataFromFile()
-    {
-        var noSerializedText = _jsonFileService.GetDataFromFile();
+    #endregion
 
+    #region Methods
+
+    #region GetDataFromFile : Getting and processing some data from file
+
+    public async Task GetDataFromFile(CancellationToken cancellationToken)
+    {
+        var noSerializedText = await _jsonFileService.GetDataFromFile();
+        
         if (string.IsNullOrEmpty(noSerializedText))
         {
-            _logger.LogInformation("File empty. Please take other file");
+            _logger.LogError("Operation denied or file empty. Please take other file");
             return;
         }
         
-        TValue? deserializedValue = default;
+        var loggerTimer = Stopwatch.StartNew();
         
-        try
+        await foreach (var item in TextSeparator(noSerializedText).WithCancellation(cancellationToken))
         {
-            deserializedValue = JsonConvert.DeserializeObject<TValue>(noSerializedText);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("Invalid data format. Please take other file");
-            return;
-        }
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogWarning("Operation denied. War operating {0},{1}",_convertedCount,_separatingCollectionCount);
+                    break;
+                }
 
-        if (deserializedValue is null || deserializedValue.Equals(default(TValue)))
+                await JsonDeserialize(item,cancellationToken);
+
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e,"Invalid data format. value : {0}/{1}",_convertedCount,_separatingCollectionCount);
+            }
+        }
+        
+        if (_deserializedValues?.Count == 0 || (bool)_deserializedValues?.Equals(new TCollection()))
         {
-            _logger.LogInformation("Failed deserialize data. Please take other file");
+            _logger.LogWarning("Failed deserialize data. Please take other file");
             return;
         }
         
-        _store.CurrentValue = deserializedValue;
+        _logger.LogWarning("All data converted.Elapsed time: {0}s", loggerTimer.Elapsed.TotalSeconds);
         
+        loggerTimer.Stop();
+        
+        _store.CurrentValue = _deserializedValues;
+
+        DisposingTemporaryValues();
+
     }
+
+    #endregion
+
+    #region TextSeparator :  Separating Json Array text on blocks
+
+    /// <summary>
+    ///     Separating Json Array text on blocks
+    /// </summary>
+    /// <param name="text">Separating text</param>
+    private async IAsyncEnumerable<string> TextSeparator(string text)
+    {
+        text = text.Replace("[", "");
+        text = text.Replace("]", "");
+
+        var separatingText = text.Split(',');
+
+        _separatingCollectionCount = separatingText.Length;
+
+        foreach (var item in separatingText)
+        {
+            yield return  item;
+        }
+    }
+
+
+    #endregion
+
+    #region JsonDeserialize : Deserialize string to json
+
+    private async Task JsonDeserialize(string item,CancellationToken cancellationToken)
+    {
+        await Task.Run(() =>
+        {
+            if (_deserializedValues?.Count == _convertedCount + 50)
+            {
+                _logger.LogInformation("Converting {0}/{1} value...",_deserializedValues.Count,_separatingCollectionCount);
+                _convertedCount += 50;
+            }
+        
+            var deserializedObject = fastJSON.JSON.ToObject<TValue>(item);
+                  
+            if (deserializedObject is null)
+            {
+                throw new ArgumentNullException(nameof(deserializedObject));
+            }
+                    
+            _deserializedValues?.Add(deserializedObject);
+            
+        },cancellationToken);
+
+    }
+
+    #endregion
+
+    #region DisposingTemporaryValues : Set to default or null temporary data
+
+    /// <summary>
+    ///     Set to null temporary data
+    /// </summary>
+    private void DisposingTemporaryValues()
+    {
+        _convertedCount = 0;
+
+        _separatingCollectionCount = 0;
+        
+        _deserializedValues = new ();
+    }
+
+    #endregion
+
+    #endregion
+    
 }

@@ -8,6 +8,7 @@
         <StartupObject>UrlReader.Program</StartupObject>
         <RootNamespace>UrlReader</RootNamespace>
         <ApplicationIcon>Assets\AppIcon\TestITaskIcon.ico</ApplicationIcon>
+        <Product>UrlReader</Product>
     </PropertyGroup>
 
     <ItemGroup>

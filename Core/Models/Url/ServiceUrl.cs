@@ -1,47 +1,63 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Text.Json.Serialization;
 using DynamicData.Binding;
-using Newtonsoft.Json;
 using ReactiveUI.Fody.Helpers;
 
 namespace Core.Models;
 
+/// <summary>
+///     Urls types for service usings
+/// </summary>
 public class ServiceUrl : Url
 {
+    #region Properties
 
     /// <summary>
-    ///     count of <a> tags
+    ///     count of tags
     /// </summary>
-    [Reactive]
-    [JsonIgnore]
-    public int TagsCount { get; set; } = default;
-
+    [Reactive] [JsonIgnore] public int TagsCount { get; set; } = 0;
+    
     /// <summary>
     ///     State of Url
     /// </summary>
-    [Reactive]
-    [JsonIgnore]
-    public UrlState State { get; set; } = UrlState.Unknown;
+    [Reactive] [JsonIgnore] public UrlState State { get; set; } = UrlState.Unknown;
+    
+    /// <summary>
+    ///     True when any propertychanged
+    /// </summary>
+    [Reactive] [JsonIgnore]  public bool IsUsingNow { get; private set; } = false;
+    
+    /// <summary>
+    ///     True if current value is Maximum of all URls in collection
+    /// </summary>
+    [Reactive] [JsonIgnore] public bool IsMaxValue { get; set; } = false;
 
 
-    [JsonIgnore]
-    [Reactive]
-    public bool IsParsingNow { get; private set; }
+    #endregion
+
+    #region Constructors
 
     public ServiceUrl()
     {
         this.WhenPropertyChanged(x=>x.Path)
-            .Subscribe(_=>IsParsingNow = true);
+            .Subscribe(_=>IsUsingNow = true);
         
         this.WhenPropertyChanged(x=>x.TagsCount)
-            .Subscribe(_=>IsParsingNow = true);
+            .Subscribe(_=>IsUsingNow = true);
         
         this.WhenPropertyChanged(x=>x.State)
-            .Subscribe(_=>IsParsingNow = true);
-
-        this.WhenPropertyChanged(x => x.IsParsingNow)
+            .Subscribe(_=>IsUsingNow = true);
+        
+        this.WhenPropertyChanged(x=>x.IsMaxValue)
+            .Subscribe(_=>IsUsingNow = true);
+        
+        this.WhenPropertyChanged(x => x.IsUsingNow)
             .Throttle(TimeSpan.FromSeconds(1))
-            .Subscribe(_=>IsParsingNow = false);
+            .Subscribe(_=>IsUsingNow = false);
     }
-    
+
+
+    #endregion
+
 }

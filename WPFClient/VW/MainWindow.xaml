@@ -12,9 +12,7 @@
     x:Class="UrlReader.VW.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:Vmds="clr-namespace:Core.VMDs.Windows;assembly=Core"
-    xmlns:converters="clr-namespace:UrlReader.Infrastructure.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:UrlReader"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -37,12 +35,27 @@
             <Grid Margin="5,0">
 
                 <!--  File operations  -->
-                <Button
-                    Command="{Binding OpenFileCommand}"
-                    Content="Open File"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    materialDesign:ButtonAssist.CornerRadius="0 0 5 5" />
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+
+                    <!--  Open File  -->
+                    <Button
+                        Command="{Binding OpenFileCommand}"
+                        Content="Open File"
+                        HorizontalAlignment="Left"
+                        Margin="5,0"
+                        VerticalAlignment="Top"
+                        materialDesign:ButtonAssist.CornerRadius="0 0 5 5" />
+
+                    <!--  clear all data  -->
+                    <Button
+                        Command="{Binding ClearDataCommand}"
+                        Content="Clear File"
+                        HorizontalAlignment="Left"
+                        Margin="5,0"
+                        VerticalAlignment="Top"
+                        materialDesign:ButtonAssist.CornerRadius="0 0 5 5" />
+
+                </StackPanel>
 
                 <!--  Tags operations  -->
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -62,6 +75,7 @@
 
                         <ComboBox
                             HorizontalContentAlignment="Center"
+                            IsEnabled="{Binding IsParsingNow, UpdateSourceTrigger=PropertyChanged, Mode=OneWay, Converter={StaticResource InvertBooleanConverter}}"
                             ItemsSource="{Binding HtmlTagsList}"
                             MinWidth="40"
                             SelectedItem="{Binding SelectedHtmlTag}"
@@ -102,31 +116,64 @@
         <Grid Grid.Row="1">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition MaxWidth="150" Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!--  Urls stats  -->
-            <StackPanel Margin="5,10,10,0">
+            <!--  Statistic  -->
+            <Grid>
 
-                <TextBlock
-                    FontSize="16"
-                    FontWeight="Bold"
-                    Text="Urls stats" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                <!--  All count  -->
-                <TextBlock FontSize="14" Text="{Binding ServiceUrls.Count, StringFormat=Count: {0}}" />
+                <!--  Urls stats  -->
+                <StackPanel Grid.Row="0" Margin="5,10,10,0">
 
-                <!--  Alives count  -->
-                <TextBlock FontSize="14" Text="{Binding AlivesUrlsCount, StringFormat=Alives: {0}}" />
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Text="Urls stats" />
 
-                <!--  Not Alives count  -->
-                <TextBlock FontSize="14" Text="{Binding NotAlivesUrlsCount, StringFormat=NotAlives: {0}}" />
+                    <!--  All count  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.UrlsCount, StringFormat=Count: {0}}" />
 
-                <!--  Unknown count  -->
-                <TextBlock FontSize="14" Text="{Binding UnknownUrlsCount, StringFormat=Unknown: {0}}" />
+                    <!--  Alives count  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.UrlsAliveCount, StringFormat=Alives: {0}}" />
 
-            </StackPanel>
+                    <!--  Not Alives count  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.UrlsNotAliveCount, StringFormat=NotAlives: {0}}" />
+
+                    <!--  Unknown count  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.UrlsUnknownCount, StringFormat=Unknown: {0}}" />
+
+                </StackPanel>
+
+
+                <!--  Tags stats  -->
+                <StackPanel Grid.Row="1" Margin="5,10,10,0">
+
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Text="Tags stats" />
+
+                    <!--  All count  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.TagsCount, StringFormat=Count: {0}}" />
+
+                    <!--  Avarage count value  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.TagsAverageCount, StringFormat=AverageCount: {0}}" />
+
+                    <!--  Max value  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.TagsMaxValue, StringFormat=Max: {0}}" />
+
+                    <!--  Tags with max value  -->
+                    <TextBlock FontSize="14" Text="{Binding UrlsStatisticService.TagsWithMaxValue, StringFormat=MaxCount: {0}}" />
+
+                </StackPanel>
+
+            </Grid>
 
             <!--  Separator  -->
             <Border
@@ -137,9 +184,13 @@
             <!--  Urls list  -->
             <DataGrid
                 AutoGenerateColumns="False"
+                EnableColumnVirtualization="True"
+                EnableRowVirtualization="True"
                 Grid.Column="1"
                 IsReadOnly="True"
                 ItemsSource="{Binding ServiceUrls}"
+                VirtualizingStackPanel.CacheLengthUnit="Item"
+                VirtualizingStackPanel.VirtualizationMode="Recycling"
                 x:Name="ServiceUrlsDataGrid">
 
                 <!--  Column Style  -->
@@ -157,23 +208,19 @@
 
                         <Style.Triggers>
 
+                            <!--  MaxValue Notifier  -->
+                            <DataTrigger Binding="{Binding IsMaxValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="Background" Value="#35772d" />
+                            </DataTrigger>
+
                             <!--  value changing Notifier  -->
-                            <DataTrigger Binding="{Binding IsParsingNow, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <DataTrigger Binding="{Binding IsUsingNow, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                 <Setter Property="Background" Value="#ab7cff" />
                             </DataTrigger>
 
-                            <!--  Max value notifier  -->
-                            <DataTrigger Value="True">
-
-                                <DataTrigger.Binding>
-                                    <MultiBinding Converter="{StaticResource IsMaxValueConverter}">
-                                        <Binding ElementName="ServiceUrlsDataGrid" Path="ItemsSource" />
-                                        <Binding Path="TagsCount" />
-                                    </MultiBinding>
-                                </DataTrigger.Binding>
-
-                                <Setter Property="Background" Value="#35772d" />
-
+                            <!--  Unknow changing Notifier  -->
+                            <DataTrigger Binding="{Binding State, UpdateSourceTrigger=PropertyChanged}" Value="Unknown">
+                                <Setter Property="Opacity" Value="0.45" />
                             </DataTrigger>
 
                         </Style.Triggers>

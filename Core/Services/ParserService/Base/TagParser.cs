@@ -29,7 +29,7 @@ public class TagParser : IParser<ICollection<string>,string>
         
         ICollection<string> collection = new List<string>();
 
-        var items = htmlDocument.QuerySelectorAll(parameter).Where(item => item.ClassName != null);
+        var items = htmlDocument.QuerySelectorAll(parameter).Where(item => item.TagName != null);
 
         foreach(var item in items)
         {

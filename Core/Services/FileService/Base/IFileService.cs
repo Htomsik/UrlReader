@@ -1,4 +1,6 @@
-﻿namespace Core.Services.FileService;
+﻿using System.Threading.Tasks;
+
+namespace Core.Services.FileService;
 
 /// <summary>
 ///     File service for get some info from out
@@ -6,5 +8,5 @@
 /// <typeparam name="TValue">some generic value</typeparam>
 public interface IFileService<TValue>
 {
-    TValue GetDataFromFile();
+    Task<TValue> GetDataFromFile();
 }

@@ -1,6 +1,7 @@
 ﻿using Core.Infrastructure.Stores;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
+using Core.Services.StatisticService;
 using Core.Stores;
 using Core.VMDs.Windows;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,5 +19,6 @@ public static partial class IocRegistrator
                 new (s.GetRequiredService<LogsStore>(),
                     s.GetRequiredService<ServiceUrlStore>(),
                     s.GetRequiredService<ServiceUrlStoreTagParser>(),
-                    s.GetRequiredService<ServiceUrlStoreFileService>()));
+                    s.GetRequiredService<ServiceUrlCollectionStoreFileService>(),
+                    s.GetRequiredService<ServiceUrlStoreStatisticService>()));
 }

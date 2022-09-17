@@ -29,8 +29,14 @@ public sealed class InformationToLogStoreSink : ILogEventSink
     
     public void Emit(LogEvent logEvent)
     {
-          if (logEvent.Level == LogEventLevel.Information)
-            _infoLogStore.AddIntoEnumerable(logEvent.RenderMessage());
+        //  if (logEvent.Level == LogEventLevel.Information)
+        
+        if (_infoLogStore.CurrentValue.Count > 50)
+        {
+            _infoLogStore.CurrentValue = new ObservableCollection<string>();
+        }
+        
+        _infoLogStore.AddIntoEnumerable(logEvent.RenderMessage());
     }
     
     #endregion

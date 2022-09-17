@@ -6,6 +6,7 @@ using Core.Services.FileService;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService;
 using Core.Services.ParserService.UrlStoreParser;
+using Core.Services.StatisticService;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -26,5 +27,6 @@ public static partial class IocRegistrator
             .AddTransient<TagParser>()
             .AddTransient<ServiceUrlStoreTagParser>()
             .AddTransient<JsonClientFileService>()
-            .AddTransient<ServiceUrlStoreFileService>();
+            .AddTransient<ServiceUrlCollectionStoreFileService>()
+            .AddTransient<ServiceUrlStoreStatisticService>();
 }

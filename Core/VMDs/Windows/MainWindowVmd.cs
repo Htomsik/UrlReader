@@ -8,7 +8,7 @@ using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
 using Core.Services.ParserService.UrlStoreParser;
-using DynamicData.Binding;
+using Core.Services.StatisticService;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -24,13 +24,27 @@ public sealed class MainWindowVmd : ReactiveObject
     /// <summary>
     ///     Last log from loggerStore
     /// </summary>
-    [Reactive]
-    public string? LastLog { get; private set; }
+    [Reactive] public string? LastLog { get; private set; }
     
-    [Reactive]
-    public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
-
-    [Reactive] public string SelectedHtmlTag { get; set; } 
+    /// <summary>
+    ///     Collection with parsings urls 
+    /// </summary>
+    [Reactive] public ObservableCollection<ServiceUrl> ServiceUrls { get; private set; }
+  
+    /// <summary>
+    ///     Statistic operations server. Calculate some params about Store with ServiceUrls 
+    /// </summary>
+    [Reactive] public IUrlsStatisticService UrlsStatisticService { get; init; }
+    
+    /// <summary>
+    ///     Current seleted html tag in HtmlTagsList
+    /// </summary>
+    [Reactive] public string SelectedHtmlTag { get; set; }
+    
+    /// <summary>
+    ///     Retranslator from StartParsingCommand IsExecuting into bool for use into Xaml 
+    /// </summary>
+    [Reactive] public bool IsParsingNow { get; private set; }
     
     #region HtmlTagsList :   List with html tags for Parsing service
 
@@ -147,20 +161,7 @@ public sealed class MainWindowVmd : ReactiveObject
     };
 
     #endregion
-
-    #region ServiceUrls Stats
-
-    [Reactive]
-    public int AlivesUrlsCount { get; private set; }
     
-    [Reactive]
-    public int NotAlivesUrlsCount { get; private set; }
-    
-    [Reactive]
-    public int UnknownUrlsCount { get; private set; }
-
-    #endregion
-
     #endregion
     
     #region Constructors
@@ -169,8 +170,15 @@ public sealed class MainWindowVmd : ReactiveObject
         IStore<ObservableCollection<string>> loggerStore,
         IStore<ObservableCollection<ServiceUrl>> serviceUrlStore,
         IStoreParser<string> tagParser,
-        IStoreFileService serviceUrlsStoreFileService)
+        IStoreFileService serviceUrlsStoreFileService,
+        IUrlsStatisticService urlsStatisticService)
     {
+        #region Stores and Services Initializing
+
+        UrlsStatisticService = urlsStatisticService;
+
+        #endregion
+        
         #region Properties and Fields Initializing
 
         ServiceUrls = serviceUrlStore.CurrentValue;
@@ -179,38 +187,6 @@ public sealed class MainWindowVmd : ReactiveObject
         
         #endregion
         
-        #region Subscriptions
-
-        serviceUrlStore.CurrentValueChangedNotifier += () => ServiceUrls = serviceUrlStore.CurrentValue;
-        
-        loggerStore.CurrentValueChangedNotifier += () => LastLog = loggerStore.CurrentValue.Last();
-
-        // Will set LastLog to null after 6 seconds after changing
-        this.WhenAnyValue(x => x.LastLog)
-            .Throttle(TimeSpan.FromSeconds(6))
-            .Subscribe(_ => LastLog = null);
-
-        // Urls stats updater
-        this.WhenAnyPropertyChanged()
-            .Subscribe(_ =>
-            {
-                AlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Alive);
-                NotAlivesUrlsCount = ServiceUrls.Count(x => x.State == UrlState.NotAlive);
-                UnknownUrlsCount = ServiceUrls.Count(x => x.State == UrlState.Unknown);
-            });
-
-        // TagsCounter when change SelectedHtmlTag Updater
-        this.WhenAnyValue(x => x.SelectedHtmlTag)
-            .Subscribe(_ =>
-            {
-                foreach (var item in serviceUrlStore.CurrentValue)
-                {
-                    item.TagsCount = 0;
-                }
-            });
-        
-        #endregion
-
         #region Commands Initializing
         
         StartParsingCommand = ReactiveCommand.CreateFromObservable(
@@ -219,11 +195,50 @@ public sealed class MainWindowVmd : ReactiveObject
                     .StartAsync(ct=>tagParser.Parse(SelectedHtmlTag,ct))
                     .TakeUntil(CancelParsingCommand),CanStartParsing);
 
-        OpenFileCommand = ReactiveCommand.Create(serviceUrlsStoreFileService.GetDataFromFile, StartParsingCommand.IsExecuting.Select(x=> x == false));
+        OpenFileCommand = ReactiveCommand.CreateFromObservable(()=>
+            Observable
+                .StartAsync(ct=> serviceUrlsStoreFileService.GetDataFromFile(ct)).TakeUntil(CancelParsingCommand), StartParsingCommand.IsExecuting.Select(x=> x == false));
+
+        ClearDataCommand = ReactiveCommand.Create(()=>serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>(),CanClearData);
         
-        CancelParsingCommand = ReactiveCommand.Create(
-            () => { },
-            StartParsingCommand.IsExecuting);
+        CancelParsingCommand = ReactiveCommand.Create(() => { },CanCancel);
+            
+        
+        
+        #endregion
+        
+        #region Subscriptions
+
+        serviceUrlStore.CurrentValueChangedNotifier += () => ServiceUrls = serviceUrlStore.CurrentValue;
+        
+        loggerStore.CurrentValueChangedNotifier += () => 
+        {
+            if (loggerStore.CurrentValue.Count != 0)
+                LastLog = loggerStore.CurrentValue.Last();
+           
+        };
+        
+        // Will set LastLog to null after 6 seconds after changing
+        this.WhenAnyValue(x => x.LastLog)
+            .Throttle(TimeSpan.FromSeconds(6))
+            .Subscribe(_ => LastLog = null);
+        
+        // TagsCounter when change SelectedHtmlTag Updater
+        this.WhenAnyValue(x => x.SelectedHtmlTag)
+            .Subscribe(_ =>
+            {
+                foreach (var item in serviceUrlStore.CurrentValue)
+                {
+                    item.TagsCount = 0;
+                    item.State = UrlState.Unknown;
+                    item.IsMaxValue = false;
+                }
+                urlsStatisticService.Close();
+            });
+
+        // IsParsingNow updater
+        this.WhenAnyObservable(x => x.StartParsingCommand.IsExecuting)
+            .Subscribe(x=>IsParsingNow = x);
         
         #endregion
 
@@ -232,6 +247,41 @@ public sealed class MainWindowVmd : ReactiveObject
     #endregion
     
     #region Commands
+    
+    /// <summary>
+    ///     Open json file command
+    /// </summary>
+    public IReactiveCommand OpenFileCommand { get; }
+
+    #region CancelParsingCommand :  Cancel StartParsingCommand
+
+    /// <summary>
+    ///     Cancel StartParsingCommand or OpenFileCommand
+    /// </summary>
+    public ReactiveCommand<Unit,Unit> CancelParsingCommand { get;  }
+    
+    private IObservable<bool> CanCancel => this.WhenAnyObservable(x => x.StartParsingCommand.IsExecuting, x => x.OpenFileCommand.IsExecuting,
+        ((b, b1) => b1 || b));
+
+
+    #endregion
+    
+    #region ClearDataCommand :  Clear data from Urls Store
+
+    /// <summary>
+    ///     Clear data from Urls Store
+    /// </summary>
+    public IReactiveCommand ClearDataCommand { get; }
+    
+    private IObservable<bool> CanClearData => 
+        this.WhenAnyValue(
+            x => x.IsParsingNow,
+            x=>x.ServiceUrls,
+            (isParsingNow,serviceUrls) 
+                => !isParsingNow && serviceUrls.Any());
+
+
+    #endregion
     
     #region StartParsingCommand :  Start parsing store service command
 
@@ -249,16 +299,6 @@ public sealed class MainWindowVmd : ReactiveObject
 
     #endregion
     
-    /// <summary>
-    ///     Open json file command
-    /// </summary>
-    public ReactiveCommand<Unit,Unit> OpenFileCommand { get; }
-    
-    /// <summary>
-    ///     Cancel StartParsingCommand
-    /// </summary>
-    public ReactiveCommand<Unit,Unit> CancelParsingCommand { get;  }
-
     #endregion
     
 }
