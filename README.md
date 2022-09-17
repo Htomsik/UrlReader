@@ -77,7 +77,11 @@
 
 ### Видео-демонстрация
 
+
+<a href="https://www.youtube.com/watch?v=1EPAk54lnmY&t=7s">
 <img width="60%" src="https://raw.githubusercontent.com/Htomsik/UrlReader/master/Assets/Preview/VideoPrewiew.png"/>
+</a>
+
 
  ### Структура приложения
 
