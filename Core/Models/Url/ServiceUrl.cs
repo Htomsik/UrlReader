@@ -44,10 +44,24 @@ public class ServiceUrl : Url
             .Subscribe(_=>IsUsingNow = true);
         
         this.WhenPropertyChanged(x=>x.TagsCount)
-            .Subscribe(_=>IsUsingNow = true);
+            .Subscribe(_ =>
+            {
+                IsUsingNow = true;
+                if (State != UrlState.Alive && TagsCount!=0)
+                {
+                    TagsCount = 0;
+                }
+            });
         
         this.WhenPropertyChanged(x=>x.State)
-            .Subscribe(_=>IsUsingNow = true);
+            .Subscribe(_ =>
+            {
+                IsUsingNow = true;
+                if (State != UrlState.Alive&& TagsCount!=0)
+                {
+                    TagsCount = 0;
+                }
+            });
         
         this.WhenPropertyChanged(x=>x.IsMaxValue)
             .Subscribe(_=>IsUsingNow = true);
@@ -55,6 +69,7 @@ public class ServiceUrl : Url
         this.WhenPropertyChanged(x => x.IsUsingNow)
             .Throttle(TimeSpan.FromSeconds(1))
             .Subscribe(_=>IsUsingNow = false);
+        
     }
 
 
