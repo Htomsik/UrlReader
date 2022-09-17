@@ -1,5 +1,4 @@
 ﻿using System;
-using Core.Extensions;
 using Core.Infrastructure.LogSinks;
 using Core.IOC;
 using Core.VMDs.Windows;
@@ -33,8 +32,8 @@ public class Program
         .UseSerilog((context, services, configuration) =>
         {
             configuration
-                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day,restrictedToMinimumLevel: LogEventLevel.Error)
-                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>(),LogEventLevel.Information);
+                .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day,restrictedToMinimumLevel: LogEventLevel.Warning)
+                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>(),LogEventLevel.Warning);
         });
     
 

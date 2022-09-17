@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -81,9 +83,14 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
     {
         _logger.LogInformation("Starting collection parse...");
 
+        // id of current processing part
         var partIdCounter = 0;
         
-        var parts = _urlsCollection.Partition(250).ToList();
+        // Parts of main collection
+        var parts = _urlsCollection.Partition(100).ToList();
+        
+        // Operation time counter
+        var loggerTimer = Stopwatch.StartNew();
             
         foreach (var pack in parts)
         {
@@ -92,7 +99,9 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
             await PartCollectionParsing(pack,partIdCounter,parts.Count, parameter, cancelToken);
         }
         
-        _logger.LogInformation("End collection parsing. Processed {0}/{1}",_urlsCollection.Count(x=>x.State != UrlState.Unknown),_urlsCollection.Count);
+        _logger.LogInformation("End collection parsing. Processed {0}/{1}. Opearion time:{2}",_urlsCollection.Count(x=>x.State != UrlState.Unknown),_urlsCollection.Count,loggerTimer.Elapsed.TotalSeconds);
+        
+        loggerTimer.Stop();
     }
 
     #endregion
@@ -109,8 +118,10 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
     /// <param name="cancelToken">Cancel operation token</param>
     async Task PartCollectionParsing(IEnumerable<TValue> partOfMain,int partId,int partsCount,string parameter, CancellationToken cancelToken)
     {
+        // old values counter of Urls with Unknown state
         var oldUnknownCount = 0;
         
+        // Counter of current count
         var cycleCount = 1;
         
         do
@@ -123,19 +134,27 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
             {
                 var newTask = Task.Run(async () =>
                 {
-                    elem.State = await elem.CheckState(cancelToken, _httpClient);
+                    try
+                    {
+                        elem.State = await elem.CheckState(cancelToken, _httpClient);
 
-                    if (elem.State is UrlState.Alive)
-                        await IsAliveParse(elem, parameter, cancelToken);
+                        if (elem.State is UrlState.Alive)
+                            await IsAliveParse(elem, parameter, cancelToken);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e,"Failed parse item:{0}/{1}",partId,partsCount);
+                    }
+                    
                 },cancelToken);
             
                 tasks.Add(newTask);
                 
             }
-
+            
             await Task.Run(() =>
             {
-                _logger.LogInformation("Parsing.. Part:{0}/{1}.Cycle: {2}/5",partId,partsCount,cycleCount);
+                _logger.LogInformation("Parsing... part:{0}/{1} cycle: {2}/5",partId,partsCount,cycleCount);
                 Task.WaitAll(tasks.ToArray());
             },cancelToken).ConfigureAwait(false);
 
@@ -155,17 +174,17 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
     /// <summary>
     ///     Additional method for Parse
     /// </summary>
-    /// <param name="value">Parsing value</param>
+    /// <param name="url">Parsing value</param>
     /// <param name="parameter">Parsing parameter</param>
     /// <param name="cancelToken">Cancelation operation token</param>
-    private async Task IsAliveParse(TValue value, string parameter, CancellationToken cancelToken)
+    private async Task IsAliveParse(TValue url, string parameter, CancellationToken cancelToken)
     {
         
-        var stringHtml = await value.HtmlDownloadAsync(cancelToken, _httpClient);
+        var stringHtml = await url.HtmlDownloadAsync(cancelToken, _httpClient);
 
         if (string.IsNullOrEmpty(stringHtml))
         {
-            value.State = UrlState.Unknown;
+            url.State = UrlState.Unknown;
             return;
         }
 
@@ -173,7 +192,7 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
 
         var tags = _tagParser.Parse(htmlDocument, parameter);
 
-        value.TagsCount = tags.Count;
+        url.TagsCount = tags.Count;
     }
 
     #endregion

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using AppInfrastructure.Stores.DefaultStore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+
 
 namespace Core.Services.FileService.UrlStoreFileService;
 
@@ -113,7 +112,7 @@ where TCollection : ICollection<TValue>, new()
         
         if (_deserializedValues?.Count == 0 || (bool)_deserializedValues?.Equals(new TCollection()))
         {
-            _logger.LogInformation("Failed deserialize data. Please take other file");
+            _logger.LogWarning("Failed deserialize data. Please take other file");
             return;
         }
         

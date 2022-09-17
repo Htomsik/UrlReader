@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Text.Json.Serialization;
 using DynamicData.Binding;
-using Newtonsoft.Json;
 using ReactiveUI.Fody.Helpers;
 
 namespace Core.Models;

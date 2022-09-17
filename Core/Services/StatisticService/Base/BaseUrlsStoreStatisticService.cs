@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
-using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -88,7 +87,7 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
         
         //Update statistic. 200 ms is timer for wait non used momet of urlsStore into oter flow
         this.WhenPropertyChanged(x=>x.ServiceUrls)
-            .Throttle(TimeSpan.FromMilliseconds(200))
+            .Throttle(TimeSpan.FromMilliseconds(1000))
             .Subscribe(_ => Update());
         
         #endregion

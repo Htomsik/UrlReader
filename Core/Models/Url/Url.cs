@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -12,5 +12,5 @@ public class Url : ReactiveObject
     /// <summary>
     ///     Path to site
     /// </summary>
-    [Reactive] [JsonProperty] public string Path { get; set; }
+    [Reactive] [JsonInclude] public string Path { get; set; }
 }
