@@ -215,8 +215,11 @@
 
 
 # Связь со мной
+
+Почта:lhz4ru822@mozmail.com
+
 [![Konstantin](https://img.shields.io/badge/Konstantin-090909?style=for-the-badge&logo=vk&logoColor=red)](https://vk.com/jessnjake)
-[![Konstantin](https://img.shields.io/badge/lhz4ru822@mozmail.com-090909?style=for-the-badge&logo=gmail&logoColor=red)]()
+
 
 
 [.Serilog-shield]: https://img.shields.io/badge/Serilog-090909?style=for-the-badge&logo=
