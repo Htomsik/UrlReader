@@ -33,7 +33,7 @@ public class Program
         {
             configuration
                 .WriteTo.File(@"logs\Log-.txt", rollingInterval: RollingInterval.Day,restrictedToMinimumLevel: LogEventLevel.Warning)
-                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>(),LogEventLevel.Warning);
+                .WriteTo.Sink(services.GetRequiredService<InformationToLogStoreSink>(),LogEventLevel.Information);
         });
     
 
