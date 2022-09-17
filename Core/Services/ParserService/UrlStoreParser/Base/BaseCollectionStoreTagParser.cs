@@ -86,17 +86,17 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
         // id of current processing part
         var partIdCounter = 0;
         
-        // Parts of main collection
-        var parts = _urlsCollection.Partition(100).ToList();
+        // Parts of main collection with only non alive urls states
+        var unknownsParts = _urlsCollection.Where(x => x.State != UrlState.Alive).Partition(100).ToList();
         
         // Operation time counter
         var loggerTimer = Stopwatch.StartNew();
             
-        foreach (var pack in parts)
+        foreach (var pack in unknownsParts)
         {
-            _logger.LogInformation("Starting {0}/{1} part of collection",++partIdCounter,parts.Count);
+            _logger.LogInformation("Starting {0}/{1} part of collection",++partIdCounter,unknownsParts.Count);
                 
-            await PartCollectionParsing(pack,partIdCounter,parts.Count, parameter, cancelToken);
+            await PartCollectionParsing(pack,partIdCounter,unknownsParts.Count, 3,parameter, cancelToken);
         }
         
         _logger.LogInformation("End collection parsing. Processed {0}/{1}. Opearion time:{2}",_urlsCollection.Count(x=>x.State != UrlState.Unknown),_urlsCollection.Count,loggerTimer.Elapsed.TotalSeconds);
@@ -111,26 +111,25 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
     /// <summary>
     ///     Parse of parts
     /// </summary>
-    /// <param name="partOfMain">Part of main collection</param>
+    /// <param name="unknownsPartOfMain">Part of main collection with unknown urls</param>
     /// <param name="partId">Part Id into main collection</param>
     /// <param name="partsCount">Count of all parts</param>
+    /// <param name="cycleCount">Count of parsing c</param>
     /// <param name="parameter">Parsing parameter</param>
     /// <param name="cancelToken">Cancel operation token</param>
-    async Task PartCollectionParsing(IEnumerable<TValue> partOfMain,int partId,int partsCount,string parameter, CancellationToken cancelToken)
+    async Task PartCollectionParsing(IEnumerable<TValue> unknownsPartOfMain,int partId,int partsCount,int cycleCount,string parameter, CancellationToken cancelToken)
     {
         // old values counter of Urls with Unknown state
         var oldUnknownCount = 0;
         
-        // Counter of current count
-        var cycleCount = 1;
+        // current operation cycle
+        int currentCycle = 1;
         
         do
         {
             var tasks = new List<Task>();
-
-            var unknowns = partOfMain.Where(x => x.State == UrlState.Unknown).ToArray();
             
-            await foreach (var elem in unknowns.AsAsync().WithCancellation(cancelToken))
+            await foreach (var elem in unknownsPartOfMain.AsAsync().WithCancellation(cancelToken))
             {
                 var newTask = Task.Run(async () =>
                 {
@@ -154,16 +153,16 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
             
             await Task.Run(() =>
             {
-                _logger.LogInformation("Parsing... part:{0}/{1} cycle: {2}/5",partId,partsCount,cycleCount);
+                _logger.LogInformation("Parsing... part:{0}/{1} cycle: {2}/{3}",partId,partsCount,currentCycle,cycleCount);
                 Task.WaitAll(tasks.ToArray());
             },cancelToken).ConfigureAwait(false);
 
-            if (oldUnknownCount == unknowns.Length)
+            if (oldUnknownCount == unknownsPartOfMain.Count())
                 break;
             
-            oldUnknownCount = unknowns.Length;
+            oldUnknownCount = unknownsPartOfMain.Count();
 
-        } while (++cycleCount <= 5);
+        } while (++currentCycle <= cycleCount);
 
     }
 

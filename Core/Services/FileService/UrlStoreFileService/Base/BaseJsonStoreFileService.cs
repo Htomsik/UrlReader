@@ -120,7 +120,7 @@ where TCollection : ICollection<TValue>, new()
         
         loggerTimer.Stop();
         
-        _store.CurrentValue = _deserializedValues;
+        _store.CurrentValue =  _deserializedValues;
 
         DisposingTemporaryValues();
 
@@ -154,6 +154,12 @@ where TCollection : ICollection<TValue>, new()
 
     #region JsonDeserialize : Deserialize string to json
 
+    /// <summary>
+    ///     deserialize module
+    /// </summary>
+    /// <param name="item">Text to deserialize</param>
+    /// <param name="cancellationToken">Cancel opearation tokek</param>
+    /// <exception cref="ArgumentNullException">If deserialized object is null</exception>
     private async Task JsonDeserialize(string item,CancellationToken cancellationToken)
     {
         await Task.Run(() =>
@@ -163,14 +169,16 @@ where TCollection : ICollection<TValue>, new()
                 _logger.LogInformation("Converting {0}/{1} value...",_deserializedValues.Count,_separatingCollectionCount);
                 _convertedCount += 50;
             }
-        
-            var deserializedObject = fastJSON.JSON.ToObject<TValue>(item);
-                  
+
+            TValue deserializedObject = default;
+            
+            deserializedObject = fastJSON.JSON.ToObject<TValue>(item);
+            
             if (deserializedObject is null)
             {
                 throw new ArgumentNullException(nameof(deserializedObject));
             }
-                    
+            
             _deserializedValues?.Add(deserializedObject);
             
         },cancellationToken);

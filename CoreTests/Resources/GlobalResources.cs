@@ -1,7 +1,7 @@
 ﻿using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using Core.Models;
-using Newtonsoft.Json;
+
 
 namespace CoreTests.Resources;
 
@@ -22,15 +22,14 @@ internal static class GlobalConstants
     #region json
 
 
-    public static string JsFormater<T>(T value) => JsonConvert.SerializeObject(value, Formatting.Indented);
-    
-    public static string RightUrlJson() => JsFormater(RightUrl);
-    
-    public static string ErrorUrlJson() => JsFormater(ErrorUrl);
-    
-    public static string NullPathUrlJson() => JsFormater(NullPathUrl);
+    public static string RightUrlJson() => "{\"path\": \"https://SomeSite.com\"}" ;
 
-    public static string NullUrlJson() => JsFormater(NullUrl);
+
+    public static string ErrorUrlJson() => "{\"path\": \"NoSite\"}";
+    
+    public static string NullPathUrlJson() =>"{\"path\": \" \"}";
+
+    public static string NullUrlJson() => "[]";
     
     #endregion
 
