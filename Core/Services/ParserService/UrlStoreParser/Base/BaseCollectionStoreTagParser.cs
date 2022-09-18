@@ -141,9 +141,7 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
                     {
                         _logger.LogError(e,"Failed parse item:{0}/{1}",partId,partsCount);
                     }
-
-                    Task.WaitAll();
-
+                    
                 },cancelToken);
             
                 tasks.Add(newTask);
@@ -154,6 +152,7 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
             {
                 _logger.LogInformation("Parsing... part:{0}/{1} cycle: {2}/{3}",partId,partsCount,currentCycle,cycleCount);
                 Task.WaitAll(tasks.ToArray());
+                
             },cancelToken).ConfigureAwait(false);
 
             if (oldUnknownCount == unknownsPartOfMain.Count())
@@ -186,7 +185,6 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
         using (var htmlDocument = await _htmlParser.ParseDocumentAsync(stringHtml, cancelToken))
         {
             url.TagsCount = _tagParser.Parse(htmlDocument, parameter).Count;
-            
         }
         
         return Task.CompletedTask;

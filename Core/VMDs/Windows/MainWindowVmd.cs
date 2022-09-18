@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using AppInfrastructure.Services.NavigationServices.Close;
 using AppInfrastructure.Stores.DefaultStore;
 using Core.Models;
 using Core.Services.FileService.UrlStoreFileService;
@@ -199,7 +200,7 @@ public sealed class MainWindowVmd : ReactiveObject
             Observable
                 .StartAsync(ct=> serviceUrlsStoreFileService.GetDataFromFile(ct)).TakeUntil(CancelParsingCommand), StartParsingCommand.IsExecuting.Select(x=> x == false));
 
-        ClearDataCommand = ReactiveCommand.Create(()=>serviceUrlStore.CurrentValue = new ObservableCollection<ServiceUrl>(),CanClearData);
+        ClearDataCommand = ReactiveCommand.Create(()=> ((ICloseServices)(serviceUrlStore)).Close(),CanClearData);
         
         CancelParsingCommand = ReactiveCommand.Create(() => { },CanCancel);
             
