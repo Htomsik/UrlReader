@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using AppInfrastructure.Services.NavigationServices.Close;
 using AppInfrastructure.Stores.Repositories.Collection;
 using Core.Models;
 using DynamicData;
@@ -9,7 +10,7 @@ namespace Core.Stores;
 /// <summary>
 ///     Store for ServiceUrl
 /// </summary>
-public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCollection<ServiceUrl>,ServiceUrl>
+public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCollection<ServiceUrl>,ServiceUrl>, ICloseServices
 {
     private IDisposable _changed;
     public override ObservableCollection<ServiceUrl>? CurrentValue
@@ -26,6 +27,7 @@ public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCol
             
             _changed?.Dispose();
             
+
             if (value != null)
             {
                 _changed =  CurrentValue
@@ -38,6 +40,9 @@ public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCol
             OnCurrentValueChanged();
         }
     }
+
+
+    public async void Close() => CurrentValue = new();
 
     public ServiceUrlStore() => CurrentValue = new ObservableCollection<ServiceUrl>();
     

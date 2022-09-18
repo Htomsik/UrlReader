@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ public sealed class JsonClientFileService : IFileService<string>
 
     private readonly ILogger _logger;
 
+    private readonly Lazy<OpenFileDialog> _openFileDialog;
+
     #endregion
     
     #region Constructors
@@ -24,30 +27,34 @@ public sealed class JsonClientFileService : IFileService<string>
     public JsonClientFileService(ILogger<JsonClientFileService> logger )
     {
         _logger = logger;
+
+        _openFileDialog = new(() => new OpenFileDialog()
+        {
+            InitialDirectory = "c:\\",
+            Filter = "Json Files|*.json;*.txt",
+            FilterIndex = 2,
+            RestoreDirectory = true
+        });
+
     }
 
     #endregion
     
+    
     public async Task<string> GetDataFromFile()
     {
-        OpenFileDialog openFileDialog = new OpenFileDialog();
-
-        openFileDialog.InitialDirectory = "c:\\";
-        openFileDialog.Filter = "Json Files|*.json;*.txt";
-        openFileDialog.FilterIndex = 2;
-        openFileDialog.RestoreDirectory = true;
-
         string fileContent = string.Empty;
 
-        if (openFileDialog.ShowDialog() == true)
+        if (_openFileDialog.Value.ShowDialog() == true)
         {
-            var fileStream = openFileDialog.OpenFile();
-            
-            _logger.LogInformation("File have {0} symbols",fileStream.Length);
-            
-            await foreach (var line in  GetDataLines(fileStream).ConfigureAwait(false))
+            using (var fileStream = _openFileDialog.Value.OpenFile())
             {
-                fileContent += line;
+                _logger.LogInformation("File have {0} symbols",fileStream.Length);
+            
+                await foreach (var line in  GetData(fileStream).ConfigureAwait(false))
+                {
+                    fileContent += line;
+                }
             }
             
         }
@@ -55,13 +62,16 @@ public sealed class JsonClientFileService : IFileService<string>
         return fileContent.Trim();
     }
     
-    private async IAsyncEnumerable<string> GetDataLines(Stream stream)
+    /// <summary>
+    ///     Getting data from file
+    /// </summary>
+    /// <param name="stream">File stream</param>
+    private async IAsyncEnumerable<string> GetData(Stream stream)
     {
         byte[] buffer = new byte[stream.Length];
 
         await stream.ReadAsync(buffer, 0, buffer.Length);
-             
+
         yield return  Encoding.Default.GetString(buffer);
-        
     }
 }

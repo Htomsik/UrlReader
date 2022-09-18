@@ -86,13 +86,14 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
             
         };
         
-        //Update statistic. 200 ms is timer for wait non used momet of urlsStore into oter flow
-        this.WhenPropertyChanged(x=>x.ServiceUrls)
-            .Throttle(TimeSpan.FromMilliseconds(1000))
-            .Subscribe(_ => Update());
-        
+        //Update statistic. 200 ms is timer for wait non used moment of urlsStore into other flow
+        this.WhenPropertyChanged(x => x.ServiceUrls)
+            .Throttle(TimeSpan.FromMilliseconds(200))
+            .Do(_=>Update())
+            .Subscribe();
+
         #endregion
-        
+
     }
 
     #endregion
@@ -171,6 +172,8 @@ public class BaseUrlsStoreStatisticService : ReactiveObject,IUrlsStatisticServic
         TagsAverageCount = 0;
         TagsMaxValue = 0;
         TagsWithMaxValue = 0;
+        
+        Update();
     }
     
     #endregion

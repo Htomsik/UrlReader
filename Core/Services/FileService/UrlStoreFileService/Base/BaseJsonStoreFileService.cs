@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -179,6 +179,9 @@ where TCollection : ICollection<TValue>, new()
                 throw new ArgumentNullException(nameof(deserializedObject));
             }
             
+
+            _deserializedValues ??= new();
+
             _deserializedValues?.Add(deserializedObject);
             
         },cancellationToken);
@@ -197,8 +200,8 @@ where TCollection : ICollection<TValue>, new()
         _convertedCount = 0;
 
         _separatingCollectionCount = 0;
-        
-        _deserializedValues = new ();
+
+        _deserializedValues = default(TCollection);
     }
 
     #endregion

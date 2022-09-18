@@ -9,6 +9,7 @@
         <RootNamespace>UrlReader</RootNamespace>
         <ApplicationIcon>Assets\AppIcon\TestITaskIcon.ico</ApplicationIcon>
         <Product>UrlReader</Product>
+        <AssemblyName>UrlReader</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
