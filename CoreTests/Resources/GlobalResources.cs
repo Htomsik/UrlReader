@@ -9,13 +9,13 @@ internal static class GlobalConstants
 {
     #region Url
 
-    public static readonly Url RightUrl = new Url{Path = "https://SomeSite.com" };
+    public static readonly ServiceUrl RightUrl = new ServiceUrl{Path = "https://SomeSite.com" };
     
-    public static readonly Url ErrorUrl = new Url{Path = "NoSite" };
+    public static readonly ServiceUrl ErrorUrl = new ServiceUrl{Path = "NoSite" };
     
-    public static readonly Url NullPathUrl = new Url{Path = "            " };
+    public static readonly ServiceUrl NullPathUrl = new ServiceUrl{Path = "            " };
     
-    public static readonly Url NullUrl = null;
+    public static readonly ServiceUrl NullUrl = null;
 
     #endregion
     
