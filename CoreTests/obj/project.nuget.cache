@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "m80t6MBYuUAn0Nt/+LIdLd327ah3G/HnNRSuy3xbuHEbx6aAQXzNjq+71K/8hN8XQ7WfahW2A3cUjpLjbQzvaw==",
+  "dgSpecHash": "NY7PjAg6798fzQ16F8SvtKfLRLztx7GzOd/r2/D/uyNMkA1Eaa9842oE49bCGjbzgJ+1KCxacxQI2ZXmb/l9YA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj",
+  "projectFilePath": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\JessJake\\.nuget\\packages\\anglesharp\\0.17.1\\anglesharp.0.17.1.nupkg.sha512",
     "C:\\Users\\JessJake\\.nuget\\packages\\castle.core\\5.1.0\\castle.core.5.1.0.nupkg.sha512",

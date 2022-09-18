@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj": {}
+    "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj": {
+    "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj",
+        "projectUniqueName": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj",
         "projectName": "CoreTests",
-        "projectPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj",
+        "projectPath": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj",
         "packagesPath": "C:\\Users\\JessJake\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\obj\\",
+        "outputPath": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\JessJake\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,8 +26,8 @@
           "net6.0-windows7.0": {
             "targetAlias": "net6.0-windows",
             "projectReferences": {
-              "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj": {
-                "projectPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj"
+              "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj": {
+                "projectPath": "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj"
               }
             }
           }
@@ -83,14 +83,14 @@
         }
       }
     },
-    "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj": {
+    "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj",
+        "projectUniqueName": "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj",
         "projectName": "Core",
-        "projectPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj",
+        "projectPath": "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj",
         "packagesPath": "C:\\Users\\JessJake\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\obj\\",
+        "outputPath": "E:\\Systems\\Desktop\\UrlReader\\Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\JessJake\\AppData\\Roaming\\NuGet\\NuGet.Config"

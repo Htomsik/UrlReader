@@ -7135,11 +7135,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj",
+      "projectUniqueName": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj",
       "projectName": "CoreTests",
-      "projectPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\CoreTests.csproj",
+      "projectPath": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\CoreTests.csproj",
       "packagesPath": "C:\\Users\\JessJake\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\CoreTests\\obj\\",
+      "outputPath": "E:\\Systems\\Desktop\\UrlReader\\CoreTests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\JessJake\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -7154,8 +7154,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj": {
-              "projectPath": "C:\\Users\\JessJake\\RiderProjects\\UrlReader\\Core\\Core.csproj"
+            "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj": {
+              "projectPath": "E:\\Systems\\Desktop\\UrlReader\\Core\\Core.csproj"
             }
           }
         }
