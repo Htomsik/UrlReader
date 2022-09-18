@@ -27,7 +27,7 @@ public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCol
             
             _changed?.Dispose();
             
-            
+
             if (value != null)
             {
                 _changed =  CurrentValue
@@ -41,8 +41,8 @@ public sealed class ServiceUrlStore : BaseLazyCollectionRepository<ObservableCol
         }
     }
 
+
     public async void Close() => CurrentValue = new();
-   
 
     public ServiceUrlStore() => CurrentValue = new ObservableCollection<ServiceUrl>();
     

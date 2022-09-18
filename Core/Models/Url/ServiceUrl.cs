@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reactive.Linq;
 using System.Text.Json.Serialization;
 using DynamicData.Binding;
@@ -40,7 +40,7 @@ public class ServiceUrl : Url
 
     public ServiceUrl()
     {
-        this.WhenPropertyChanged(x=>x.Path)
+       this.WhenPropertyChanged(x=>x.Path)
             .Do(_=>IsUsingNow = true)
             .Subscribe();
         

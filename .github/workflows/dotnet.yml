@@ -1,0 +1,31 @@
+name: Testing
+
+on:
+  push:
+    branches: [ "Core","master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  Tests:
+    runs-on: windows-latest  
+                             
+    env:
+      Solution_Name: UrlReader.sln                         
+      Test_Project_Path: CoreTests/CoreTests.csproj     
+     
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install dotnet
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Execute unit tests
+      run: dotnet test
