@@ -135,16 +135,15 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
                 {
                     try
                     {
-                        elem.State = await elem.CheckState(cancelToken, _httpClient);
-
-                        if (elem.State is UrlState.Alive)
-                            await IsAliveParse(elem, parameter, cancelToken);
+                        await  IsAliveParse(elem, parameter, cancelToken).WaitAsync(TimeSpan.FromSeconds(5));
                     }
                     catch (Exception e)
                     {
                         _logger.LogError(e,"Failed parse item:{0}/{1}",partId,partsCount);
                     }
-                    
+
+                    Task.WaitAll();
+
                 },cancelToken);
             
                 tasks.Add(newTask);
@@ -176,22 +175,21 @@ public class BaseCollectionStoreTagParser<TCollection, TValue> : IStoreParser<st
     /// <param name="url">Parsing value</param>
     /// <param name="parameter">Parsing parameter</param>
     /// <param name="cancelToken">Cancelation operation token</param>
-    private async Task IsAliveParse(TValue url, string parameter, CancellationToken cancelToken)
+    private async Task<Task> IsAliveParse(TValue url, string parameter, CancellationToken cancelToken)
     {
         
         var stringHtml = await url.HtmlDownloadAsync(cancelToken, _httpClient);
 
         if (string.IsNullOrEmpty(stringHtml))
+            return Task.CompletedTask;
+        
+        using (var htmlDocument = await _htmlParser.ParseDocumentAsync(stringHtml, cancelToken))
         {
-            url.State = UrlState.Unknown;
-            return;
+            url.TagsCount = _tagParser.Parse(htmlDocument, parameter).Count;
+            
         }
-
-        var htmlDocument = await _htmlParser.ParseDocumentAsync(stringHtml, cancelToken);
-
-        var tags = _tagParser.Parse(htmlDocument, parameter);
-
-        url.TagsCount = tags.Count;
+        
+        return Task.CompletedTask;
     }
 
     #endregion

@@ -11,73 +11,48 @@ namespace Core.Extensions;
 /// </summary>
 public static class UrlExtensions
 {
-    #region CheckState :   Checking url status
-
-    /// <summary>
-    ///     Checking url status
-    /// </summary>
-    /// <param name="url">Url type</param>
-    /// <param name="cancelToken">Canceled operation token</param>
-    /// <param name="client">Http client</param>
-    /// <returns>UrlState.Alive is Alive , UrlState.NotAlive is NotAlive, and  UrlState.Unknown if timeout ends</returns>
-    /// <exception cref="ArgumentNullException">If url or Url.Pat is null</exception>
-    public static async Task<UrlState> CheckState(this Url url,CancellationToken cancelToken,HttpClient client = null)
-    {
-       
-        url.NullChecker();
-        
-        client ??= new ();
-        
-        HttpResponseMessage response;
-        
-        try
-        {
-             response = await client.GetAsync(url.Path,cancelToken).ConfigureAwait(false);
-        }
-        catch
-        {
-            return UrlState.Unknown;
-        }
-        
-        return  response.IsSuccessStatusCode ? UrlState.Alive : UrlState.NotAlive;
-    }
+   
     
-    #endregion
-
     #region HtmlDownloadAsync :  Download html page in string format
 
     /// <summary>
-    ///     Download html page in string format
+    ///     Download html page in string format and set state to service url
     /// </summary>
     /// <param name="url">Url type</param>
     /// <param name="cancelToken">Canceled operation token</param>
     /// <param name="client">Http client</param>
+    /// <exception cref="ArgumentNullException">If Url or Url.Path or client is null</exception>
     /// <returns>Download Html page in string format</returns>
-    public static async Task<string?> HtmlDownloadAsync(this Url url,CancellationToken cancelToken,HttpClient client = null)
+    public static async Task<string?> HtmlDownloadAsync(this ServiceUrl url,CancellationToken cancelToken,HttpClient client)
     {
         //If Null - throw exception
         url.NullChecker();
-        
-        client ??= new ();
-        
-        HttpResponseMessage? response = null;
 
+        if (client is null)
+        {
+            throw new ArgumentNullException(nameof(client));
+        }
+        
+        
         try
         {
-            response = await client.GetAsync(url.Path, cancelToken).ConfigureAwait(false);
+            using (HttpResponseMessage response = await client.GetAsync(url.Path, cancelToken).ConfigureAwait(false))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    url.State = UrlState.Alive;
+                    return await response.Content.ReadAsStringAsync(cancelToken);
+                }
+            }
         }
         catch 
         {
+            url.State = UrlState.Unknown;
             return null;
         }
-       
         
-        string? source = null;
-
-        if((bool)response?.IsSuccessStatusCode)
-            source = await response.Content.ReadAsStringAsync(cancelToken);
-        
-        return source;
+        url.State = UrlState.NotAlive;
+        return null;
     }
     
     #endregion
