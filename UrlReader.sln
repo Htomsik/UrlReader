@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFClient", "WPFClient\WPFClient.csproj", "{E2B4435A-C803-466E-91A5-B29DB544F56C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlReader.WPF", "UI\UrlReader.WPF\UrlReader.WPF.csproj", "{E2B4435A-C803-466E-91A5-B29DB544F56C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{2397C6ED-6418-45AB-A4D0-25C237D981D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlReader.Core", "UI\UrlReader.Core\UrlReader.Core.csproj", "{2397C6ED-6418-45AB-A4D0-25C237D981D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{80A4BCC8-8763-4066-8DED-E45ED2A17008}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{0A43B225-CF5A-47AB-A08A-F50DAA3CD186}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{0A43B225-CF5A-47AB-A08A-F50DAA3CD186}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTests", "CoreTests\CoreTests.csproj", "{85ACCBDD-409E-4D0D-BE20-994CF418A3BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlReader.Tests.Core", "Tests\UrlReader.Tests.Core\UrlReader.Tests.Core.csproj", "{85ACCBDD-409E-4D0D-BE20-994CF418A3BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
