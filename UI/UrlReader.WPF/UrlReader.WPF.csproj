@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+        <StartupObject>UrlReader.WPF.Program</StartupObject>
+        <ApplicationIcon>Assets\AppIcon\TestITaskIcon.ico</ApplicationIcon>
+        <Product>UrlReader.WPF</Product>
+        <PackageId>UrlReader.WPF</PackageId>
+        <Authors>UrlReader.WPF</Authors>
+        <Company>UrlReader.WPF</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+      <PackageReference Include="ReactiveUI.WPF" Version="18.3.1" />
+      <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
+      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UrlReader.Core\UrlReader.Core.csproj" />
+    </ItemGroup>
+
+</Project>
